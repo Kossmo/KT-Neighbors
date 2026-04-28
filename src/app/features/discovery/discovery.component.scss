@@ -1,0 +1,290 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/paper' as *;
+
+.discovery {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  height: 100dvh;
+  overflow: hidden;
+
+  @media (max-width: $bp-lg) {
+    grid-template-columns: 340px 1fr;
+  }
+
+  @media (max-width: $bp-md) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 50dvh 50dvh;
+  }
+}
+
+// ─── Left panel ───────────────────────────────────────────────────────────────
+.species-panel {
+  display: flex;
+  flex-direction: column;
+  background: $color-paper;
+  border-right: 1.5px solid $color-ink-faint;
+  overflow: hidden;
+
+  @media (max-width: $bp-md) {
+    border-right: none;
+    border-bottom: 1.5px solid $color-ink-faint;
+    order: 2;
+  }
+}
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-4;
+  padding: $space-6;
+  border-bottom: 1px solid $color-ink-faint;
+  flex-shrink: 0;
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__location {
+    @include hand-heading($text-2xl);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__count {
+    font-size: $text-sm;
+    color: $color-ink-muted;
+    font-style: italic;
+    margin-top: $space-1;
+  }
+}
+
+// ─── Search bar ──────────────────────────────────────────────────────────────
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-bottom: 1px solid $color-ink-faint;
+  flex-shrink: 0;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: $color-ink-muted;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: $font-body;
+    font-size: $text-sm;
+    font-style: italic;
+    color: $color-ink;
+    padding: $space-2 0;
+
+    &::placeholder { color: $color-ink-muted; }
+
+    // Hide browser-native clear button
+    &::-webkit-search-cancel-button { display: none; }
+  }
+
+  &__clear {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: $color-ink-muted;
+    border-radius: 50%;
+    transition: color $duration-fast $ease-ink;
+
+    svg { width: 10px; height: 10px; }
+
+    &:hover { color: $color-ink; }
+  }
+}
+
+// ─── Kingdom filters ──────────────────────────────────────────────────────────
+.kingdom-filters {
+  display: flex;
+  gap: $space-2;
+  padding: $space-3 $space-6;
+  border-bottom: 1px solid $color-ink-faint;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.kingdom-chip {
+  flex-shrink: 0;
+  padding: $space-1 $space-3;
+  border: 1px solid var(--chip-border, #{$color-ink-faint});
+  border-radius: 20px;
+  background: transparent;
+  color: $color-ink-light;
+  font-family: $font-body;
+  font-size: $text-xs;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition:
+    background $duration-fast $ease-ink,
+    color $duration-fast $ease-ink,
+    border-color $duration-fast $ease-ink;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--chip-bg, rgba(58,47,36,0.06));
+    color: $color-ink;
+  }
+
+  &--active {
+    background: var(--chip-bg, rgba(58,47,36,0.08));
+    border-color: var(--chip-border, #{$color-ink-light});
+    color: $color-ink;
+    font-weight: 500;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--chip-border, #{$color-ink-light});
+    outline-offset: 2px;
+  }
+}
+
+.back-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid $color-ink-faint;
+  border-radius: 2px;
+  color: $color-ink-light;
+  transition: border-color $duration-normal $ease-ink, color $duration-normal $ease-ink;
+  margin-top: $space-1;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    border-color: $color-ink;
+    color: $color-ink;
+  }
+}
+
+// ─── Map mode toggle ──────────────────────────────────────────────────────────
+.map-mode-btn {
+  position: absolute;
+  top: $space-3;
+  right: $space-3;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: rgba($color-paper, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid $color-ink-faint;
+  border-radius: 2px;
+  color: $color-ink-light;
+  font-family: $font-body;
+  font-size: $text-sm;
+  white-space: nowrap;
+  transition:
+    border-color $duration-fast $ease-ink,
+    color $duration-fast $ease-ink,
+    background $duration-fast $ease-ink;
+
+  svg { width: 14px; height: 14px; }
+
+  &:hover {
+    border-color: $color-ink;
+    color: $color-ink;
+  }
+
+  &--active {
+    background: rgba($color-ochre, 0.1);
+    border-color: $color-ochre;
+    color: $color-ink;
+  }
+}
+
+// ─── Right panel / Map ────────────────────────────────────────────────────────
+.map-panel {
+  position: relative; // anchor for .map-mode-btn and loading overlays
+  background: $color-paper-dark;
+
+  @media (max-width: $bp-md) {
+    order: 1;
+  }
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+}
+
+.map-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-6;
+
+  &--empty {
+    background: $color-paper;
+  }
+}
+
+.empty-msg {
+  font-family: $font-body;
+  font-size: $text-2xl;
+  color: $color-ink-muted;
+  font-style: italic;
+}
+
+// ─── Ripple (reused from landing) ─────────────────────────────────────────────
+.ripple-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid $color-ink-muted;
+  animation: inkRipple 2.4s $ease-ink infinite;
+
+  &--1 { width: 40px; height: 40px; animation-delay: 0ms; }
+  &--2 { width: 40px; height: 40px; animation-delay: 1000ms; }
+}
+
+.ripple-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $color-ink-light;
+}
+
+@keyframes inkRipple {
+  0%   { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(3); opacity: 0; }
+}

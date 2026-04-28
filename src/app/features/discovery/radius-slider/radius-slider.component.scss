@@ -1,0 +1,102 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/paper' as *;
+
+.radius-slider {
+  border-top: 1px solid $color-ink-faint;
+  flex-shrink: 0;
+}
+
+.radius-toggle {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  width: 100%;
+  padding: $space-3 $space-6;
+  font-size: $text-sm;
+  color: $color-ink-muted;
+  text-align: left;
+  transition: color $duration-fast $ease-ink;
+
+  &:hover {
+    color: $color-ink;
+  }
+
+  svg:first-child {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    font-style: italic;
+  }
+
+  &__chevron {
+    width: 12px;
+    height: 12px;
+    transition: transform $duration-normal $ease-ink;
+
+    &--open {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.radius-panel {
+  padding: $space-2 $space-6 $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  animation: slideDown $duration-normal $ease-ink both;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__label {
+    font-size: $text-xs;
+    color: $color-ink-muted;
+    flex-shrink: 0;
+    width: 32px;
+  }
+
+  &__input {
+    flex: 1;
+    height: 3px;
+    appearance: none;
+    background: $color-ink-faint;
+    border-radius: 2px;
+    cursor: pointer;
+    outline: none;
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: $color-ink;
+      border: 2px solid $color-paper;
+      box-shadow: 0 0 0 1px $color-ink-muted;
+      cursor: pointer;
+    }
+
+    &:focus-visible::-webkit-slider-thumb {
+      box-shadow: 0 0 0 2px $color-green;
+    }
+  }
+
+  &__value {
+    text-align: center;
+    font-family: $font-body;
+    font-size: $text-xl;
+    color: $color-ink;
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

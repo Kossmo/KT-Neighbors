@@ -1,0 +1,78 @@
+@use '../../../../styles/variables' as *;
+@use '../../../../styles/paper' as *;
+
+// Critical: without min-height:0 the flex child never shrinks below content size
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.species-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: $space-4 0;
+  scrollbar-width: thin;
+  scrollbar-color: $color-ink-faint transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: $color-ink-faint; border-radius: 2px; }
+}
+
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
+.skeleton-card {
+  display: flex;
+  gap: $space-4;
+  padding: $space-4 $space-6;
+  border-bottom: 1px solid $color-ink-faint;
+
+  &__photo {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 2px;
+    background: $color-paper-dark;
+    animation: shimmer 1.6s ease-in-out infinite alternate;
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: $space-2;
+  }
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 2px;
+  background: $color-paper-dark;
+  animation: shimmer 1.6s ease-in-out infinite alternate;
+
+  &--wide   { width: 70%; }
+  &--narrow { width: 45%; animation-delay: 200ms; }
+}
+
+// ─── Empty / Error ─────────────────────────────────────────────────────────────
+.list-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-16 $space-6;
+  text-align: center;
+
+  &__msg {
+    font-family: $font-body;
+    font-size: $text-xl;
+    color: $color-ink-muted;
+    line-height: $leading-loose;
+  }
+}
+
+@keyframes shimmer {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}

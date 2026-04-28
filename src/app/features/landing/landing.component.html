@@ -1,0 +1,100 @@
+<main class="landing">
+
+  <!-- Ink ripple animation during detection -->
+  @if (state() === 'detecting' || state() === 'geocoding') {
+    <div class="ripple-container" aria-hidden="true">
+      <div class="ripple ripple--1"></div>
+      <div class="ripple ripple--2"></div>
+      <div class="ripple ripple--3"></div>
+      <div class="ripple-dot"></div>
+    </div>
+    <p class="detecting-label">
+      {{ state() === 'detecting' ? 'Scanning your surroundings…' : 'Locating address…' }}
+    </p>
+  }
+
+  <!-- Main entry screen — both options always visible -->
+  @if (state() === 'idle') {
+    <div class="hero" role="main">
+      <div class="hero__eyebrow">field notebook</div>
+      <h1 class="hero__title">Who lives<br>next to you?</h1>
+      <p class="hero__subtitle">
+        Discover the wild species<br>sharing your corner of the world.
+      </p>
+
+      <!-- Error / info message (geoloc denied, etc.) -->
+      @if (errorMsg()) {
+        <p class="hero__error" role="alert">{{ errorMsg() }}</p>
+      }
+
+      <div class="entry-options">
+        <!-- Option A: geolocation -->
+        <button class="btn-locate" (click)="beginDetection()">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <circle cx="10" cy="10" r="3" fill="currentColor"/>
+            <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.2" fill="none"/>
+            <line x1="10" y1="1" x2="10" y2="4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="10" y1="16" x2="10" y2="19" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="1" y1="10" x2="4" y2="10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="16" y1="10" x2="19" y2="10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          <span>Locate me</span>
+        </button>
+
+        <div class="entry-divider">
+          <span class="entry-divider__line"></span>
+          <span class="entry-divider__label">or</span>
+          <span class="entry-divider__line"></span>
+        </div>
+
+        <!-- Option B: address input -->
+        <div class="address-form">
+          <div class="address-form__row">
+            <input
+              class="address-form__input"
+              type="text"
+              placeholder="City, country or address…"
+              [(ngModel)]="addressInput"
+              (keyup.enter)="submitAddress()"
+              aria-label="Your location"
+            />
+            <button
+              class="btn-go"
+              (click)="submitAddress()"
+              [disabled]="!addressInput.trim()"
+              aria-label="Search this address"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <p class="hero__note">Your location stays on your device.</p>
+    </div>
+  }
+
+  <!-- Error state (address not found) -->
+  @if (state() === 'error') {
+    <div class="error-state">
+      <p class="error-state__msg">{{ errorMsg() }}</p>
+      <button class="btn-retry" (click)="retryFromError()">Try again</button>
+    </div>
+  }
+
+  <!-- Decorative botanical sketch lines -->
+  <svg class="deco deco--tl" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M10 110 Q40 60 80 20" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.3"/>
+    <path d="M20 100 Q35 75 55 50" stroke="currentColor" stroke-width="0.6" fill="none" opacity="0.2"/>
+    <circle cx="80" cy="20" r="3" fill="currentColor" opacity="0.25"/>
+    <circle cx="55" cy="50" r="2" fill="currentColor" opacity="0.2"/>
+  </svg>
+  <svg class="deco deco--br" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M110 10 Q80 60 40 100" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.3"/>
+    <circle cx="40" cy="100" r="3" fill="currentColor" opacity="0.25"/>
+  </svg>
+
+</main>

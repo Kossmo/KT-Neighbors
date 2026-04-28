@@ -1,0 +1,46 @@
+<!-- Loading skeleton -->
+@if (status() === 'loading') {
+  <ul class="species-list species-list--skeleton" aria-label="Loading species…" aria-busy="true">
+    @for (s of skeletons; track $index) {
+      <li class="skeleton-card">
+        <div class="skeleton-card__photo"></div>
+        <div class="skeleton-card__body">
+          <div class="skeleton-line skeleton-line--wide"></div>
+          <div class="skeleton-line skeleton-line--narrow"></div>
+        </div>
+      </li>
+    }
+  </ul>
+}
+
+<!-- Species list -->
+@if (status() === 'success') {
+  <ul class="species-list" aria-label="Observed species">
+    @for (s of species(); track s.taxonKey) {
+      <li>
+        <app-species-card
+          [species]="s"
+          [selected]="selectedKey() === s.taxonKey"
+          (cardSelected)="selectSpecies(s.taxonKey)"
+          (detailRequested)="openDetail(s.taxonKey)"
+        />
+      </li>
+    }
+  </ul>
+}
+
+<!-- Empty state -->
+@if (status() === 'empty') {
+  <div class="list-empty">
+    <p class="list-empty__msg">
+      No observations found nearby.<br>Try increasing the radius.
+    </p>
+  </div>
+}
+
+<!-- Error state -->
+@if (status() === 'error') {
+  <div class="list-empty">
+    <p class="list-empty__msg">Could not load species data.</p>
+  </div>
+}

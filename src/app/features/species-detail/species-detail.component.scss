@@ -1,0 +1,378 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/paper' as *;
+
+// Nav bar height — used to offset sticky content
+$nav-h: 56px;
+
+.detail {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: $color-paper;
+}
+
+// ─── Sticky nav bar ───────────────────────────────────────────────────────────
+.detail__nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  height: $nav-h;
+  padding: 0 $space-6;
+  background: rgba($color-paper, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid $color-ink-faint;
+
+  &-title {
+    font-family: $font-body;
+    font-size: $text-xl;
+    color: $color-ink-light;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.back-btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border: 1px solid $color-ink-faint;
+  border-radius: 2px;
+  color: $color-ink-light;
+  font-family: $font-body;
+  font-size: $text-base;
+  transition: border-color $duration-fast $ease-ink, color $duration-fast $ease-ink;
+
+  svg { width: 16px; height: 16px; }
+
+  &:hover {
+    border-color: $color-ink;
+    color: $color-ink;
+  }
+}
+
+// ─── Two-column main section ──────────────────────────────────────────────────
+.detail__main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+
+  @media (max-width: $bp-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ─── Left: photo (sticky) ─────────────────────────────────────────────────────
+.detail__photo-col {
+  position: sticky;
+  top: $nav-h;
+  height: calc(100dvh - #{$nav-h});
+  overflow: hidden;
+  background: $color-paper-dark;
+
+  @media (max-width: $bp-md) {
+    position: relative;
+    height: 52vw;
+    min-height: 240px;
+  }
+}
+
+// ─── Photo slider ─────────────────────────────────────────────────────────────
+.photo-slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  animation: fadeIn $duration-slow $ease-ink both;
+}
+
+.photo-slider__track {
+  display: flex;
+  height: 100%;
+  transition: transform 380ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+.photo-slider__slide {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  height: 100%;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.slide-source {
+  position: absolute;
+  bottom: 52px; // above dots
+  right: $space-3;
+  font-size: $text-xs;
+  letter-spacing: 0.06em;
+  color: rgba($color-paper, 0.8);
+  background: rgba($color-ink, 0.3);
+  backdrop-filter: blur(4px);
+  padding: 2px $space-2;
+  border-radius: 2px;
+}
+
+// ─── Nav arrows ───────────────────────────────────────────────────────────────
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba($color-paper, 0.82);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba($color-ink-faint, 0.7);
+  color: $color-ink;
+  transition: background $duration-fast $ease-ink, opacity $duration-fast $ease-ink;
+
+  svg { width: 16px; height: 16px; }
+
+  &--prev { left: $space-3; }
+  &--next { right: $space-3; }
+
+  &:hover   { background: rgba($color-paper, 0.97); }
+  &:disabled { opacity: 0.25; pointer-events: none; }
+}
+
+// ─── Slide indicator dots ─────────────────────────────────────────────────────
+.slider-dots {
+  position: absolute;
+  bottom: $space-4;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: $space-2;
+  z-index: 10;
+}
+
+.slider-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba($color-paper, 0.4);
+  border: 1px solid rgba($color-paper, 0.75);
+  transition: background $duration-fast $ease-ink, transform $duration-fast $ease-ink;
+
+  &--active {
+    background: $color-paper;
+    transform: scale(1.4);
+  }
+}
+
+.detail__photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-ink-muted;
+
+  svg { width: 80px; height: 80px; }
+}
+
+// ─── Right: info panel ────────────────────────────────────────────────────────
+.detail__info-col {
+  padding: $space-12 $space-8;
+  display: flex;
+  flex-direction: column;
+  gap: $space-8;
+
+  @media (max-width: $bp-lg) {
+    padding: $space-8 $space-6;
+    gap: $space-6;
+  }
+
+  @media (max-width: $bp-md) {
+    padding: $space-6 $space-4;
+    gap: $space-6;
+  }
+}
+
+// ─── Names ────────────────────────────────────────────────────────────────────
+.detail__names {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.detail__common-name {
+  font-family: $font-hand;
+  font-size: $text-hero;
+  font-weight: 700;
+  line-height: 1.0;
+  color: $color-ink;
+
+  @media (max-width: $bp-lg) {
+    font-size: $text-4xl;
+  }
+
+  @media (max-width: $bp-md) {
+    font-size: $text-3xl;
+  }
+}
+
+.detail__scientific-name {
+  @include latin-name;
+  font-size: $text-xl;
+}
+
+// ─── Stats bar ────────────────────────────────────────────────────────────────
+.stats-bar {
+  display: flex;
+  gap: $space-8;
+  padding-bottom: $space-6;
+  border-bottom: 1px solid $color-ink-faint;
+
+  @media (max-width: $bp-sm) {
+    gap: $space-6;
+  }
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+
+  &__value {
+    font-family: $font-body;
+    font-size: $text-2xl;
+    color: $color-ink;
+    font-weight: 600;
+  }
+
+  &__label {
+    font-size: $text-xs;
+    color: $color-ink-muted;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+}
+
+// ─── Section title ────────────────────────────────────────────────────────────
+.section-title {
+  font-family: $font-body;
+  font-size: $text-xs;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: $color-ink-muted;
+  margin-bottom: $space-4;
+}
+
+// ─── Description ─────────────────────────────────────────────────────────────
+.description {
+  &__text {
+    font-size: $text-base;
+    line-height: $leading-loose;
+    color: $color-ink-light;
+  }
+
+  &__link {
+    display: inline-block;
+    margin-top: $space-4;
+    font-size: $text-sm;
+    color: $color-green;
+    font-style: italic;
+    border-bottom: 1px solid currentColor;
+    transition: color $duration-fast $ease-ink;
+
+    &:hover { color: $color-ink; }
+  }
+}
+
+.description-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.sk-line {
+  height: 14px;
+  border-radius: 2px;
+  background: $color-paper-dark;
+  animation: shimmer 1.6s ease-in-out infinite alternate;
+
+  &--full   { width: 100%; }
+  &--wide   { width: 80%; }
+  &--narrow { width: 55%; animation-delay: 200ms; }
+}
+
+// ─── Taxonomy ─────────────────────────────────────────────────────────────────
+.taxonomy__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+}
+
+.taxonomy__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $space-3 $space-4;
+  border: 1px solid $color-ink-faint;
+  border-radius: 2px;
+  min-width: 80px;
+}
+
+.taxonomy__rank {
+  font-size: $text-xs;
+  color: $color-ink-muted;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.taxonomy__value {
+  font-family: $font-body;
+  font-size: $text-lg;
+  color: $color-ink;
+  margin-top: $space-1;
+  text-align: center;
+}
+
+// ─── Full-width map section ───────────────────────────────────────────────────
+.detail__map-section {
+  padding: $space-8 $space-8 $space-12;
+  border-top: 1px solid $color-ink-faint;
+
+  @media (max-width: $bp-md) {
+    padding: $space-6 $space-4 $space-8;
+  }
+}
+
+.detail__map {
+  height: 420px;
+  border: 1.5px solid $color-ink-faint;
+  border-radius: 2px;
+  overflow: hidden;
+
+  @media (max-width: $bp-md) {
+    height: 280px;
+  }
+}
+
+// ─── Keyframes ────────────────────────────────────────────────────────────────
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes shimmer {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}

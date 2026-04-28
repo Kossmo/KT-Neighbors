@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ng *)",
+      "Bash(npm install *)",
+      "mcp__ide__getDiagnostics",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}

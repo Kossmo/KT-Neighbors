@@ -1,0 +1,175 @@
+@if (species(); as s) {
+  <article class="detail">
+
+    <!-- Sticky top nav bar -->
+    <nav class="detail__nav">
+      <button class="back-btn" (click)="goBack()" aria-label="Back to discovery">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span>Back</span>
+      </button>
+      <span class="detail__nav-title">{{ displayName() }}</span>
+    </nav>
+
+    <!-- Two-column main section -->
+    <div class="detail__main">
+
+      <!-- Left: sticky photo / slider -->
+      <div class="detail__photo-col">
+        @if (photoSlides().length > 0) {
+          <div class="photo-slider" [class.photo-slider--multi]="hasMultipleSlides()">
+
+            <!-- Sliding track -->
+            <div
+              class="photo-slider__track"
+              [style.transform]="'translateX(-' + slideIndex() * 100 + '%)'"
+            >
+              @for (slide of photoSlides(); track slide.url; let i = $index) {
+                <div class="photo-slider__slide">
+                  <img
+                    [src]="slide.url"
+                    [alt]="s.scientificName"
+                    (error)="onPhotoError(i)"
+                  />
+                  @if (hasMultipleSlides()) {
+                    <span class="slide-source">
+                      {{ slide.source === 'inat' ? 'iNaturalist' : 'GBIF' }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Nav arrows (only when multiple slides) -->
+            @if (hasMultipleSlides()) {
+              <button
+                class="slider-btn slider-btn--prev"
+                (click)="prevSlide()"
+                [disabled]="slideIndex() === 0"
+                aria-label="Previous photo"
+              >
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </button>
+              <button
+                class="slider-btn slider-btn--next"
+                (click)="nextSlide()"
+                [disabled]="slideIndex() === photoSlides().length - 1"
+                aria-label="Next photo"
+              >
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </button>
+
+              <div class="slider-dots" role="tablist">
+                @for (slide of photoSlides(); track slide.url; let i = $index) {
+                  <button
+                    class="slider-dot"
+                    [class.slider-dot--active]="slideIndex() === i"
+                    (click)="slideIndex.set(i)"
+                    role="tab"
+                    [attr.aria-label]="'Photo ' + (i + 1)"
+                    [attr.aria-selected]="slideIndex() === i"
+                  ></button>
+                }
+              </div>
+            }
+
+          </div>
+        } @else {
+          <div class="detail__photo-placeholder" aria-hidden="true">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="28" r="14" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.25"/>
+              <path d="M16 72 Q40 44 64 72" stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.25"/>
+            </svg>
+          </div>
+        }
+      </div>
+
+      <!-- Right: info panel -->
+      <div class="detail__info-col">
+
+        <header class="detail__names">
+          <h1 class="detail__common-name">{{ displayName() }}</h1>
+          @if (s.vernacularName) {
+            <p class="detail__scientific-name">{{ s.scientificName }}</p>
+          }
+        </header>
+
+        <!-- Stats -->
+        <div class="stats-bar">
+          <div class="stat">
+            <span class="stat__value">{{ s.occurrenceCount }}</span>
+            <span class="stat__label">observations</span>
+          </div>
+          <div class="stat">
+            <span class="stat__value">{{ s.family || '—' }}</span>
+            <span class="stat__label">family</span>
+          </div>
+          <div class="stat">
+            <span class="stat__value">{{ s.kingdom || '—' }}</span>
+            <span class="stat__label">kingdom</span>
+          </div>
+        </div>
+
+        <!-- Wikipedia description -->
+        @if (enriching()) {
+          <div class="description-skeleton">
+            <div class="sk-line sk-line--full"></div>
+            <div class="sk-line sk-line--full"></div>
+            <div class="sk-line sk-line--wide"></div>
+            <div class="sk-line sk-line--narrow"></div>
+          </div>
+        }
+        @if (s.wikipediaSummary) {
+          <section class="description">
+            <h2 class="section-title">About</h2>
+            <p class="description__text">{{ s.wikipediaSummary }}</p>
+            @if (s.wikipediaUrl) {
+              <a class="description__link" [href]="s.wikipediaUrl" target="_blank" rel="noopener">
+                Read more on Wikipedia ↗
+              </a>
+            }
+          </section>
+        }
+
+        <!-- Taxonomy -->
+        @if (taxonomy().length > 0) {
+          <section class="taxonomy">
+            <h2 class="section-title">Classification</h2>
+            <ol class="taxonomy__list">
+              @for (t of taxonomy(); track t.rank) {
+                <li class="taxonomy__item">
+                  <span class="taxonomy__rank">{{ t.rank }}</span>
+                  <span class="taxonomy__value">{{ t.value }}</span>
+                </li>
+              }
+            </ol>
+          </section>
+        }
+
+      </div>
+    </div>
+
+    <!-- Full-width map section -->
+    @if (mapCoords(); as coords) {
+      <section class="detail__map-section">
+        <h2 class="section-title">Where it was seen</h2>
+        <div class="detail__map">
+          <app-map
+            [species]="[s]"
+            [selectedKey]="null"
+            [coordinates]="coords"
+          />
+        </div>
+      </section>
+    }
+
+  </article>
+}

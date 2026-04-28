@@ -1,0 +1,40 @@
+<div class="map-wrap">
+  <div #mapEl class="map-el"></div>
+
+  @if (mode() === 'heatmap') {
+    <div class="heat-controls">
+
+      <button
+        class="heat-play"
+        (click)="togglePlay()"
+        [attr.aria-label]="isPlaying() ? 'Pause' : 'Play'"
+      >
+        @if (isPlaying()) {
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <rect x="3"  y="2" width="4" height="12" rx="1" fill="currentColor"/>
+            <rect x="9" y="2" width="4" height="12" rx="1" fill="currentColor"/>
+          </svg>
+        } @else {
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 2l10 6-10 6V2z" fill="currentColor"/>
+          </svg>
+        }
+      </button>
+
+      <div class="heat-timeline" role="group" aria-label="Month selector">
+        @for (slot of heatSlots(); track slot.label; let i = $index) {
+          <button
+            class="heat-tick"
+            [class.heat-tick--active]="currentMonth() === i"
+            (click)="setMonth(i)"
+            [attr.aria-label]="slot.label"
+            [attr.aria-pressed]="currentMonth() === i"
+          ></button>
+        }
+      </div>
+
+      <span class="heat-month-label">{{ monthLabel() }}</span>
+
+    </div>
+  }
+</div>
