@@ -185,6 +185,10 @@ export class DiscoveryComponent implements OnInit {
     this.router.navigate(['/tree']);
   }
 
+  goToHabitat(): void {
+    this.router.navigate(['/habitat']);
+  }
+
   goToGame(): void {
     this.router.navigate(['/game']);
   }

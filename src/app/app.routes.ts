@@ -28,5 +28,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/game/game.component').then((m) => m.GameComponent),
   },
+  {
+    path: 'habitat',
+    loadComponent: () =>
+      import('./features/habitat/habitat.component').then((m) => m.HabitatComponent),
+  },
   { path: '**', redirectTo: '' },
 ];

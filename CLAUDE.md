@@ -88,6 +88,19 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 - Écran de score final : fond paper, score en Amatic SC, message selon le résultat (5 niveaux)
 - `roundIndex` change → `@for (idx of [roundIndex()]; track idx)` force la recréation du `<img>` pour rejouer l'animation fade-in
 
+### Habitat — graphe phylogénétique (`/habitat`)
+- Accessible depuis un bouton icône dans `.map-tools` en haut à droite de la carte
+- Graphe D3 force-directed : toutes les espèces trouvées, nœuds colorés par règne
+- Liens intra-genus (force 0.9, distance 50) et intra-family (force 0.4, distance 110), limités à 12/6 nœuds par groupe pour éviter la surcharge
+- Taille des nœuds : `Math.max(7, Math.min(26, sqrt(occurrenceCount) * 2.0))`
+- Couleurs par règne : Animalia ochre, Plantae vert, Fungi rouge, Chromista bleu-gris
+- **Tooltip** : panel vertical 256px — photo en haut, nom vernaculaire, nom scientifique, famille + nb observations en bas ; s'ouvre vers le haut si le curseur est proche du bord bas
+- **Zoom contraint** : simulation pré-tournée 150 ticks synchrones (`.stop()` + `.tick(150)`) avant toute interaction — `applyZoomConstraints()` appelé immédiatement pour éviter le snap-back ; `scaleExtent` min = fitScale (toutes les espèces visibles), `translateExtent` = bbox des nœuds + 60px de padding
+- Highlight au survol : nœuds voisins opaques, autres dimmed ; liens non-connectés à 4% d'opacité
+- Clic sur un nœud → fiche détail de l'espèce
+- Drag and drop des nœuds (simulation relancée pendant le drag)
+- Entrée : fade-in 700ms
+
 ### Fiche détail (`/species/:taxonKey`)
 - Layout deux colonnes : photo sticky gauche | infos scrollable droite
 - **Photo slider** : la photo GBIF initiale ne change jamais ; si iNaturalist charge une photo différente, elle est ajoutée en slide 2 silencieusement (flèches + dots apparaissent, label source GBIF/iNaturalist)
@@ -155,6 +168,7 @@ src/
       species-detail/
       tree/
       game/
+      habitat/
   styles/
     _variables.scss   # palette, fonts, spacing, breakpoints, easings
     _paper.scss       # grain overlay, mixins hand-border/latin-name/hand-heading
@@ -171,7 +185,7 @@ src/
 ### V3 — idées plus créatives
 - **Arbre taxonomique interactif** (D3 tree) : classification (règne → espèce) des créatures trouvées près de toi ✅ implémenté
 - **Jeu de reconnaissance** : photo + 4 noms possibles, pour apprendre la faune/flore locale ✅ implémenté
-- **"Qui partage ton habitat ?"** : graphe force-directed des espèces et leurs liens phylogénétiques
+- **"Qui partage ton habitat ?"** : graphe force-directed des espèces et leurs liens phylogénétiques ✅ implémenté
 - **"Safari du jour"** : une espèce tirée au sort chaque jour parmi celles du coin
 - **Mode collection** : l'utilisateur coche les espèces qu'il a vues en vrai, comme un pokédex local
 
