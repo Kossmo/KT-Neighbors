@@ -1,8 +1,8 @@
 @use '../../../styles/variables' as *;
 
-$h-bg:   #16130f;
-$h-text: #e2d8cb;
-$h-muted: #9a8878;
+$h-bg:   $color-paper;
+$h-text: $color-ink;
+$h-muted: $color-ink-muted;
 
 .habitat {
   position: fixed;
@@ -90,21 +90,19 @@ $h-muted: #9a8878;
 .habitat__legend-item {
   display: flex;
   align-items: center;
-  gap: $space-2;
+  gap: $space-3;
   font-family: $font-body;
-  font-size: $text-xs;
-  font-style: italic;
-  color: $h-muted;
+  font-size: $text-sm;
+  color: $h-text;
 }
 
 .habitat__swatch {
-  width: 20px;
-  height: 2px;
-  border-radius: 1px;
+  width: 28px;
+  border-radius: 2px;
   flex-shrink: 0;
 
-  &--genus  { background: rgba(196, 135, 58, 0.75); height: 2.5px; }
-  &--family { background: rgba(180, 160, 130, 0.45); }
+  &--genus  { background: rgba(160, 90, 20, 0.85); height: 3px; }
+  &--family { background: rgba(120, 90, 60, 0.55); height: 2px; }
 }
 
 // ─── Tooltip ─────────────────────────────────────────────────────────────────
@@ -117,12 +115,12 @@ $h-muted: #9a8878;
   flex-direction: column;
   gap: 0;
   padding: $space-2;
-  background: $color-paper;
+  background: $color-paper-dark;
   border: 1px solid $color-ink-faint;
   border-radius: 2px;
   pointer-events: none;
   white-space: nowrap;
-  box-shadow: 0 2px 12px rgba($h-bg, 0.5);
+  box-shadow: 0 2px 12px rgba($color-ink, 0.18);
 }
 
 .habitat__tooltip-img {
