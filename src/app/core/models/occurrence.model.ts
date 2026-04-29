@@ -30,10 +30,21 @@ export interface GbifOccurrence {
   mediaType?: string[];
 }
 
+export interface GbifFacetCount {
+  name: string;
+  count: number;
+}
+
+export interface GbifFacet {
+  field: string;
+  counts: GbifFacetCount[];
+}
+
 export interface GbifSearchResponse {
   offset: number;
   limit: number;
   endOfRecords: boolean;
   count: number;
   results: GbifOccurrence[];
+  facets?: GbifFacet[];
 }

@@ -37,6 +37,6 @@ export class CacheService {
   occurrenceKey(lat: number, lon: number, radiusKm: number): string {
     const gridLat = Math.round(lat * 50) / 50;  // ~2km precision
     const gridLon = Math.round(lon * 50) / 50;
-    return `neighbors:occ:${gridLat}:${gridLon}:${radiusKm}`;
+    return `neighbors:sp:${gridLat}:${gridLon}:${radiusKm}`;
   }
 }
