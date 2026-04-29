@@ -45,6 +45,7 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 - Ordre des contrôles dans le panel : search → radius → kingdom chips → liste
 - Compteur "N / total species · Xkm" quand un filtre est actif
 - Cache localStorage 24h (clé géohash ~2km)
+- **`.map-tools`** : container positionné `top-right` de la carte contenant les boutons tree (icône arbre), game (icône dé) et heatmap toggle — visible quand `status === 'success'`
 
 ### Carte (Leaflet)
 - Tuiles : CartoDB Positron (fond blanc épuré, lignes grises fines)
@@ -56,7 +57,7 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 - Zoom control déplacé en `topleft` pour libérer le coin `topright`
 
 ### Heatmap
-- Bouton toggle "Heat map / Pins" en haut à droite de la carte (visible quand status=success)
+- Bouton toggle "Heat map / Pins" dans `.map-tools` en haut à droite de la carte (visible quand status=success)
 - Canvas overlay Leaflet (z-index 450) avec dégradés radiaux accumulés par densité (bleu-vert `#4a6a7a` → transparent)
 - **12 mois glissants** excluant le mois en cours : de M-12 à M-1 inclus
 - Barre de contrôles en bas de carte : play/pause + timeline 12 segments + label du mois actif (ex: "May '25")
@@ -68,13 +69,24 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 - `monthChanged` output du `MapComponent` → `heatMonth` signal dans `SpeciesStore`
 
 ### Arbre taxonomique (`/tree`)
-- Accessible depuis un bouton dans le panel de discovery
+- Accessible depuis un bouton icône en haut à droite de la carte (dans `.map-tools`)
 - Arbre D3 horizontal collapsible : Life → Kingdom → Phylum → Class → Order → Family → Genus → Espèce
 - Collapse initial au niveau Order (depth >= 4) ; clic sur un nœud → expand/collapse
 - Clic sur une feuille (espèce) → navigate vers fiche détail
 - Couleurs par règne (Animalia ochre, Plantae vert, Fungi rouge…), feuilles vert sauge
 - Labels avec halo paper-colored (`paint-order: stroke fill`) pour passer par-dessus les traits
 - Groupes SVG séparés : `linkGroup` (toujours derrière) + `nodeGroup` (toujours devant)
+- **Persistance de l'état expand/collapse** : `treeExpandedNodes` signal (Set de clés `rank:name`) dans `SpeciesStore`, reset sur `store.search()`
+
+### Jeu de reconnaissance (`/game`)
+- Accessible depuis un bouton icône dé en haut à droite de la carte (dans `.map-tools`)
+- 10 rounds : photo plein écran + 4 propositions de noms (1 correct + 3 distracteurs)
+- Distracteurs tirés du même règne en priorité, fallback sur le pool global
+- **Fallback photo** : si l'image GBIF échoue → appel iNaturalist en temps réel ; skeleton pendant le fetch ; si iNat n'a rien → round skippé silencieusement
+- Photo en `object-fit: contain` + même image floutée (`filter: blur + brightness`) en fond pour remplir l'espace sans déformer
+- Feedback après réponse : correct vert / mauvais rouge / autres dimmed + nom scientifique révélé
+- Écran de score final : fond paper, score en Amatic SC, message selon le résultat (5 niveaux)
+- `roundIndex` change → `@for (idx of [roundIndex()]; track idx)` force la recréation du `<img>` pour rejouer l'animation fade-in
 
 ### Fiche détail (`/species/:taxonKey`)
 - Layout deux colonnes : photo sticky gauche | infos scrollable droite
@@ -86,11 +98,14 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 
 ## Persistance des filtres et état UI
 
-`searchQuery`, `selectedKingdoms`, `mapMode` et `heatMonth` vivent dans `SpeciesStore` (singleton) :
+`searchQuery`, `selectedKingdoms`, `mapMode`, `heatMonth` et `treeExpandedNodes` vivent dans `SpeciesStore` (singleton) :
 - **Retour depuis détail** → tout préservé (store.search() non appelé)
 - **Aller sur home** (`goHome()`) → reset complet : filtres + mapMode('pins') + heatMonth(0)
 - **Lancer depuis landing** (`navigateToDiscovery()`) → reset via `store.search()`
 - **Nouvelle localisation** (`store.search()`) → reset inclus dans l'action
+
+### Navigation retour
+- `Location.back()` (Angular `@angular/common`) utilisé dans tous les composants secondaires (species-detail, tree, game) pour revenir à la page précédente quelle qu'elle soit. Ne jamais hardcoder `router.navigate(['/discovery'])` comme retour.
 
 ## Pièges et bugs résolus
 
@@ -139,6 +154,7 @@ src/
         species-list/
       species-detail/
       tree/
+      game/
   styles/
     _variables.scss   # palette, fonts, spacing, breakpoints, easings
     _paper.scss       # grain overlay, mixins hand-border/latin-name/hand-heading
@@ -154,7 +170,7 @@ src/
 
 ### V3 — idées plus créatives
 - **Arbre taxonomique interactif** (D3 tree) : classification (règne → espèce) des créatures trouvées près de toi ✅ implémenté
-- **Jeu de reconnaissance** : photo + 4 noms possibles, pour apprendre la faune/flore locale
+- **Jeu de reconnaissance** : photo + 4 noms possibles, pour apprendre la faune/flore locale ✅ implémenté
 - **"Qui partage ton habitat ?"** : graphe force-directed des espèces et leurs liens phylogénétiques
 - **"Safari du jour"** : une espèce tirée au sort chaque jour parmi celles du coin
 - **Mode collection** : l'utilisateur coche les espèces qu'il a vues en vrai, comme un pokédex local

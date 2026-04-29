@@ -10,16 +10,6 @@
             stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
       </button>
-      <button class="tree-btn" (click)="goToTree()" aria-label="Taxonomy tree">
-        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none">
-          <circle cx="10" cy="3"  r="2" stroke="currentColor" stroke-width="1.3"/>
-          <circle cx="4"  cy="14" r="2" stroke="currentColor" stroke-width="1.3"/>
-          <circle cx="16" cy="14" r="2" stroke="currentColor" stroke-width="1.3"/>
-          <line x1="10" y1="5"  x2="4"  y2="12" stroke="currentColor" stroke-width="1.3"/>
-          <line x1="10" y1="5"  x2="16" y2="12" stroke="currentColor" stroke-width="1.3"/>
-        </svg>
-      </button>
-
       <div class="panel-header__text">
         <h2 class="panel-header__location">
           {{ store.locationName() || 'Your area' }}
@@ -108,32 +98,52 @@
       />
     }
 
-    <!-- Heat map toggle -->
+    <!-- Map tools: tree, game, heatmap toggle -->
     @if (store.status() === 'success') {
-      <button
-        class="map-mode-btn"
-        [class.map-mode-btn--active]="mapMode() === 'heatmap'"
-        (click)="toggleMapMode()"
-        [attr.aria-pressed]="mapMode() === 'heatmap'"
-      >
-        @if (mapMode() === 'heatmap') {
-          <svg viewBox="0 0 16 16" aria-hidden="true">
-            <circle cx="5"  cy="8" r="2.5" fill="currentColor" opacity="0.5"/>
-            <circle cx="11" cy="8" r="2.5" fill="currentColor" opacity="0.5"/>
-            <circle cx="8"  cy="4" r="2.5" fill="currentColor" opacity="0.5"/>
-            <circle cx="8" cy="12" r="2.5" fill="currentColor" opacity="0.5"/>
-            <circle cx="8"  cy="8" r="3"   fill="currentColor"/>
+      <div class="map-tools">
+        <button class="map-tool-btn" (click)="goToTree()" aria-label="Taxonomy tree">
+          <svg viewBox="0 0 20 20" aria-hidden="true" fill="none">
+            <circle cx="10" cy="3"  r="2" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="4"  cy="14" r="2" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="16" cy="14" r="2" stroke="currentColor" stroke-width="1.3"/>
+            <line x1="10" y1="5"  x2="4"  y2="12" stroke="currentColor" stroke-width="1.3"/>
+            <line x1="10" y1="5"  x2="16" y2="12" stroke="currentColor" stroke-width="1.3"/>
           </svg>
-          <span>Pins</span>
-        } @else {
-          <svg viewBox="0 0 16 16" aria-hidden="true">
-            <circle cx="8" cy="8" r="5" fill="currentColor" opacity="0.15"/>
-            <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.3"/>
-            <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+        </button>
+        <button class="map-tool-btn" (click)="goToGame()" aria-label="Species quiz">
+          <svg viewBox="0 0 20 20" aria-hidden="true" fill="none">
+            <rect x="2" y="2" width="16" height="16" rx="2.5" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="7"  cy="7"  r="1.4" fill="currentColor"/>
+            <circle cx="13" cy="7"  r="1.4" fill="currentColor"/>
+            <circle cx="7"  cy="13" r="1.4" fill="currentColor"/>
+            <circle cx="13" cy="13" r="1.4" fill="currentColor"/>
           </svg>
-          <span>Heat map</span>
-        }
-      </button>
+        </button>
+        <button
+          class="map-mode-btn"
+          [class.map-mode-btn--active]="mapMode() === 'heatmap'"
+          (click)="toggleMapMode()"
+          [attr.aria-pressed]="mapMode() === 'heatmap'"
+        >
+          @if (mapMode() === 'heatmap') {
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="5"  cy="8" r="2.5" fill="currentColor" opacity="0.5"/>
+              <circle cx="11" cy="8" r="2.5" fill="currentColor" opacity="0.5"/>
+              <circle cx="8"  cy="4" r="2.5" fill="currentColor" opacity="0.5"/>
+              <circle cx="8" cy="12" r="2.5" fill="currentColor" opacity="0.5"/>
+              <circle cx="8"  cy="8" r="3"   fill="currentColor"/>
+            </svg>
+            <span>Pins</span>
+          } @else {
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <circle cx="8" cy="8" r="5" fill="currentColor" opacity="0.15"/>
+              <circle cx="8" cy="8" r="3" fill="currentColor" opacity="0.3"/>
+              <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+            </svg>
+            <span>Heat map</span>
+          }
+        </button>
+      </div>
     }
     @if (store.status() === 'loading') {
       <div class="map-placeholder">

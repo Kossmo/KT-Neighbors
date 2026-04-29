@@ -160,8 +160,7 @@
   }
 }
 
-.back-btn,
-.tree-btn {
+.back-btn {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
@@ -174,10 +173,7 @@
   transition: border-color $duration-normal $ease-ink, color $duration-normal $ease-ink;
   margin-top: $space-1;
 
-  svg {
-    width: 18px;
-    height: 18px;
-  }
+  svg { width: 18px; height: 18px; }
 
   &:hover {
     border-color: $color-ink;
@@ -185,12 +181,41 @@
   }
 }
 
-// ─── Map mode toggle ──────────────────────────────────────────────────────────
-.map-mode-btn {
+// ─── Map tools (tree + game + heatmap toggle) ─────────────────────────────────
+.map-tools {
   position: absolute;
   top: $space-3;
   right: $space-3;
   z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.map-tool-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba($color-paper, 0.88);
+  backdrop-filter: blur(6px);
+  border: 1px solid $color-ink-faint;
+  border-radius: 2px;
+  color: $color-ink-light;
+  transition:
+    border-color $duration-fast $ease-ink,
+    color $duration-fast $ease-ink;
+
+  svg { width: 15px; height: 15px; }
+
+  &:hover {
+    border-color: $color-ink;
+    color: $color-ink;
+  }
+}
+
+.map-mode-btn {
   display: flex;
   align-items: center;
   gap: $space-2;

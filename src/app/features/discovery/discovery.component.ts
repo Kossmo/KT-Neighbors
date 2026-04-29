@@ -185,6 +185,10 @@ export class DiscoveryComponent implements OnInit {
     this.router.navigate(['/tree']);
   }
 
+  goToGame(): void {
+    this.router.navigate(['/game']);
+  }
+
   goHome(): void {
     this.store.searchQuery.set('');
     this.store.selectedKingdoms.set(new Set());

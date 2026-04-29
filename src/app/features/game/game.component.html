@@ -1,0 +1,90 @@
+<div class="game">
+
+  @if (status() !== 'finished' && currentRound(); as round) {
+
+    <!-- Full-screen photo — recreated on each round to trigger fade-in -->
+    @for (idx of [roundIndex()]; track idx) {
+      <div class="game__bg">
+        @if (loadingInat()) {
+          <div class="game__skeleton"></div>
+        } @else if (photoUrl()) {
+          <img class="game__blur" [src]="photoUrl()!" alt="" aria-hidden="true" />
+          <img class="game__img"  [src]="photoUrl()!" (error)="onPhotoError()" alt="" />
+        }
+        <div class="game__gradient"></div>
+      </div>
+    }
+
+    <!-- Top HUD -->
+    <header class="game__hud">
+      <button class="game__back" (click)="goBack()" aria-label="Quit game">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </button>
+
+      <div class="game__dots" role="progressbar" [attr.aria-valuenow]="roundIndex() + 1" [attr.aria-valuemax]="rounds().length">
+        @for (i of progressDots(); track i) {
+          <span
+            class="game__dot"
+            [class.game__dot--done]="i < roundIndex()"
+            [class.game__dot--current]="i === roundIndex()"
+          ></span>
+        }
+      </div>
+
+      <span class="game__score-badge" aria-label="Score">{{ score() }} pts</span>
+    </header>
+
+    <!-- Bottom panel -->
+    <footer class="game__panel">
+      <div class="game__choices">
+        @for (choice of round.choices; track choice.name) {
+          <button
+            class="game__choice"
+            [class.game__choice--correct]="status() === 'answered' && choice.isCorrect"
+            [class.game__choice--wrong]="status() === 'answered' && !choice.isCorrect && pickedName() === choice.name"
+            [class.game__choice--dim]="status() === 'answered' && !choice.isCorrect && pickedName() !== choice.name"
+            (click)="pick(choice)"
+            [disabled]="status() === 'answered'"
+          >
+            @if (choice.isScientific) { <em>{{ choice.name }}</em> }
+            @else { {{ choice.name }} }
+          </button>
+        }
+      </div>
+
+      @if (status() === 'answered') {
+        <div class="game__feedback">
+          <p class="game__reveal">
+            <em>{{ round.species.scientificName }}</em>
+            @if (round.species.vernacularName) { · {{ round.species.vernacularName }} }
+          </p>
+          <button class="game__next" (click)="next()">
+            {{ roundIndex() + 1 < rounds().length ? 'Continue' : 'See results' }}
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </button>
+        </div>
+      }
+    </footer>
+
+  }
+
+  <!-- Score screen -->
+  @if (status() === 'finished') {
+    <div class="game__results">
+      <p class="game__results-label">Final score</p>
+      <p class="game__results-score">{{ score() }}<span>/{{ rounds().length }}</span></p>
+      <p class="game__results-msg">{{ scoreMessage() }}</p>
+      <div class="game__results-actions">
+        <button class="game__results-btn" (click)="restart()">Play again</button>
+        <button class="game__results-btn game__results-btn--ghost" (click)="goBack()">Back</button>
+      </div>
+    </div>
+  }
+
+</div>
