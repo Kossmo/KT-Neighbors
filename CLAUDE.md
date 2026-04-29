@@ -67,6 +67,15 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 - `heatSlots` calculé dans `DiscoveryComponent`, passé en input au `MapComponent`
 - `monthChanged` output du `MapComponent` → `heatMonth` signal dans `SpeciesStore`
 
+### Arbre taxonomique (`/tree`)
+- Accessible depuis un bouton dans le panel de discovery
+- Arbre D3 horizontal collapsible : Life → Kingdom → Phylum → Class → Order → Family → Genus → Espèce
+- Collapse initial au niveau Order (depth >= 4) ; clic sur un nœud → expand/collapse
+- Clic sur une feuille (espèce) → navigate vers fiche détail
+- Couleurs par règne (Animalia ochre, Plantae vert, Fungi rouge…), feuilles vert sauge
+- Labels avec halo paper-colored (`paint-order: stroke fill`) pour passer par-dessus les traits
+- Groupes SVG séparés : `linkGroup` (toujours derrière) + `nodeGroup` (toujours devant)
+
 ### Fiche détail (`/species/:taxonKey`)
 - Layout deux colonnes : photo sticky gauche | infos scrollable droite
 - **Photo slider** : la photo GBIF initiale ne change jamais ; si iNaturalist charge une photo différente, elle est ajoutée en slide 2 silencieusement (flèches + dots apparaissent, label source GBIF/iNaturalist)
@@ -129,6 +138,7 @@ src/
         species-card/
         species-list/
       species-detail/
+      tree/
   styles/
     _variables.scss   # palette, fonts, spacing, breakpoints, easings
     _paper.scss       # grain overlay, mixins hand-border/latin-name/hand-heading
@@ -143,7 +153,7 @@ src/
 - Heat map des observations par saison — animation d'un an en 30s ✅ implémenté (12 mois glissants)
 
 ### V3 — idées plus créatives
-- **Arbre taxonomique interactif** (D3 tree) : classification (règne → espèce) des créatures trouvées près de toi
+- **Arbre taxonomique interactif** (D3 tree) : classification (règne → espèce) des créatures trouvées près de toi ✅ implémenté
 - **Jeu de reconnaissance** : photo + 4 noms possibles, pour apprendre la faune/flore locale
 - **"Qui partage ton habitat ?"** : graphe force-directed des espèces et leurs liens phylogénétiques
 - **"Safari du jour"** : une espèce tirée au sort chaque jour parmi celles du coin

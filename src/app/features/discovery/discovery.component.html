@@ -10,6 +10,16 @@
             stroke-linecap="round" stroke-linejoin="round" fill="none"/>
         </svg>
       </button>
+      <button class="tree-btn" (click)="goToTree()" aria-label="Taxonomy tree">
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none">
+          <circle cx="10" cy="3"  r="2" stroke="currentColor" stroke-width="1.3"/>
+          <circle cx="4"  cy="14" r="2" stroke="currentColor" stroke-width="1.3"/>
+          <circle cx="16" cy="14" r="2" stroke="currentColor" stroke-width="1.3"/>
+          <line x1="10" y1="5"  x2="4"  y2="12" stroke="currentColor" stroke-width="1.3"/>
+          <line x1="10" y1="5"  x2="16" y2="12" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+      </button>
+
       <div class="panel-header__text">
         <h2 class="panel-header__location">
           {{ store.locationName() || 'Your area' }}

@@ -1,0 +1,20 @@
+<div class="tree-wrap" #wrapEl>
+
+  <nav class="tree-nav">
+    <button class="tree-back" (click)="goBack()" aria-label="Back to discovery">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" stroke-width="1.5"
+          stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </button>
+    <div class="tree-nav__text">
+      <h1 class="tree-nav__title">Taxonomy tree</h1>
+      <p class="tree-nav__sub">{{ locationName() || 'Your area' }} · {{ speciesCount() }} species</p>
+    </div>
+    <p class="tree-nav__hint">Click a node to expand&thinsp;·&thinsp;Click a species to explore</p>
+  </nav>
+
+
+<svg #svgEl class="tree-svg" aria-label="Taxonomic tree"></svg>
+
+</div>

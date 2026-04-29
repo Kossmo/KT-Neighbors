@@ -18,5 +18,10 @@ export const routes: Routes = [
         (m) => m.SpeciesDetailComponent,
       ),
   },
+  {
+    path: 'tree',
+    loadComponent: () =>
+      import('./features/tree/tree.component').then((m) => m.TreeComponent),
+  },
   { path: '**', redirectTo: '' },
 ];

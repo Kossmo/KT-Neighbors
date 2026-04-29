@@ -1,0 +1,87 @@
+@use '../../../styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100dvh;
+  background: $color-paper;
+  overflow: hidden;
+}
+
+.tree-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+// ─── Nav bar ──────────────────────────────────────────────────────────────────
+.tree-nav {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  padding: 0 $space-6;
+  height: 56px;
+  flex-shrink: 0;
+  background: rgba($color-paper, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid $color-ink-faint;
+  z-index: 10;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  &__title {
+    font-family: $font-body;
+    font-size: $text-lg;
+    font-weight: 500;
+    color: $color-ink;
+    line-height: 1;
+  }
+
+  &__sub {
+    font-size: $text-xs;
+    color: $color-ink-muted;
+    font-style: italic;
+  }
+
+  &__hint {
+    margin-left: auto;
+    font-size: $text-xs;
+    color: $color-ink-faint;
+    font-style: italic;
+    white-space: nowrap;
+
+    @media (max-width: $bp-md) { display: none; }
+  }
+}
+
+.tree-back {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid $color-ink-faint;
+  border-radius: 2px;
+  color: $color-ink-light;
+  transition: border-color $duration-fast $ease-ink, color $duration-fast $ease-ink;
+
+  svg { width: 18px; height: 18px; }
+
+  &:hover { border-color: $color-ink; color: $color-ink; }
+}
+
+
+// ─── SVG canvas ───────────────────────────────────────────────────────────────
+.tree-svg {
+  flex: 1;
+  width: 100%;
+  cursor: grab;
+
+  &:active { cursor: grabbing; }
+}

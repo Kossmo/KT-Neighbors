@@ -181,6 +181,10 @@ export class DiscoveryComponent implements OnInit {
     this.store.updateRadius(km);
   }
 
+  goToTree(): void {
+    this.router.navigate(['/tree']);
+  }
+
   goHome(): void {
     this.store.searchQuery.set('');
     this.store.selectedKingdoms.set(new Set());

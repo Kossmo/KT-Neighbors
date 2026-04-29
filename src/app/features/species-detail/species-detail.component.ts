@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { InatService } from '../../core/api/inaturalist.service';
@@ -35,6 +36,7 @@ export class SpeciesDetailComponent implements OnInit {
   private readonly inat = inject(InatService);
   private readonly wiki = inject(WikipediaService);
   private readonly router = inject(Router);
+  private readonly location = inject(Location);
 
   readonly species  = signal<Species | null>(null);
   readonly enriching = signal(false);
@@ -136,13 +138,6 @@ export class SpeciesDetailComponent implements OnInit {
   }
 
   goBack(): void {
-    const coords = this.store.coordinates();
-    if (coords) {
-      this.router.navigate(['/discovery'], {
-        queryParams: { lat: coords.lat.toFixed(6), lon: coords.lon.toFixed(6) },
-      });
-    } else {
-      this.router.navigate(['/']);
-    }
+    this.location.back();
   }
 }

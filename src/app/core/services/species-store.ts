@@ -28,6 +28,7 @@ export class SpeciesStore {
   readonly selectedKingdoms = signal<Set<string>>(new Set());
   readonly mapMode          = signal<'pins' | 'heatmap'>('pins');
   readonly heatMonth        = signal<number>(0);
+  readonly treeExpandedNodes = signal<Set<string>>(new Set());
 
   // ─── Derived signals ────────────────────────────────────────────────────────
   readonly selectedSpecies = computed(() => {
@@ -50,6 +51,7 @@ export class SpeciesStore {
     this.selectedKingdoms.set(new Set());
     this.mapMode.set('pins');
     this.heatMonth.set(0);
+    this.treeExpandedNodes.set(new Set());
 
     const cacheKey = this.cache.occurrenceKey(lat, lon, radiusKm);
     const cached = this.cache.get<GbifOccurrence[]>(cacheKey);
