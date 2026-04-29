@@ -141,7 +141,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   }
 
   async ngAfterViewInit(): Promise<void> {
-    const L = await import('leaflet');
+    const mod = await import('leaflet');
+    const L = ((mod as any).default ?? mod) as typeof import('leaflet');
     this.L = L;
 
     const coords = this.coordinates();
