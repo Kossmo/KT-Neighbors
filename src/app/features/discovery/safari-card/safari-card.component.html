@@ -1,0 +1,53 @@
+@if (visible() && species(); as sp) {
+  <div class="safari-card" [class.safari-card--collapsed]="!expanded()">
+
+    <!-- Always-visible header — click anywhere to toggle -->
+    <button class="safari-card__header" (click)="toggle()" aria-label="Toggle species of the day">
+      <svg class="safari-card__sun" viewBox="0 0 14 14" aria-hidden="true" fill="none">
+        <circle cx="7" cy="7" r="2.4" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M7 1v1.6M7 11.4V13M1 7h1.6M11.4 7H13
+                 M2.93 2.93l1.13 1.13M9.94 9.94l1.13 1.13
+                 M2.93 11.07l1.13-1.13M9.94 4.06l1.13-1.13"
+          stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span class="safari-card__label">Species of the day</span>
+      <svg class="safari-card__chevron" viewBox="0 0 12 12" aria-hidden="true" fill="none">
+        <path d="M2 4.5l4 4 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <!-- Collapsible body -->
+    <div class="safari-card__body">
+
+      <!-- Photo -->
+      @if (sp.representativePhoto && !photoFailed()) {
+        <div class="safari-card__photo-wrap">
+          <img
+            class="safari-card__photo"
+            [src]="sp.representativePhoto.url"
+            [alt]="sp.vernacularName || sp.scientificName"
+            (error)="onPhotoError()"
+          />
+        </div>
+      }
+
+      <!-- Info -->
+      <div class="safari-card__info">
+        <p class="safari-card__common">{{ sp.vernacularName || sp.scientificName }}</p>
+        @if (sp.vernacularName) {
+          <p class="safari-card__scientific">{{ sp.scientificName }}</p>
+        }
+        <p class="safari-card__meta">{{ sp.kingdom }} · {{ sp.family }}</p>
+        <button class="safari-card__cta" (click)="goToDetail()">
+          View profile
+          <svg viewBox="0 0 12 12" aria-hidden="true" fill="none">
+            <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+}

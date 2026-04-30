@@ -100,6 +100,10 @@
 
     <!-- Map tools: tree, game, heatmap toggle -->
     @if (store.status() === 'success') {
+      <app-safari-card />
+    }
+
+    @if (store.status() === 'success') {
       <div class="map-tools">
         <button class="map-tool-btn" (click)="goToTree()" aria-label="Taxonomy tree">
           <svg viewBox="0 0 20 20" aria-hidden="true" fill="none">

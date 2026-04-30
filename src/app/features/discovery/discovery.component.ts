@@ -11,6 +11,7 @@ import { Species } from '../../core/models/species.model';
 import { SpeciesStore } from '../../core/services/species-store';
 import { MapComponent } from './map/map.component';
 import { RadiusSliderComponent } from './radius-slider/radius-slider.component';
+import { SafariCardComponent } from './safari-card/safari-card.component';
 import { SpeciesListComponent } from './species-list/species-list.component';
 
 // Colors for kingdom filter chips — carnet de terrain palette
@@ -28,7 +29,7 @@ const DEFAULT_KINGDOM_COLOR = { bg: 'rgba(58,47,36,0.08)', border: '#6b5744' };
 
 @Component({
   selector: 'app-discovery',
-  imports: [SpeciesListComponent, MapComponent, RadiusSliderComponent],
+  imports: [SpeciesListComponent, MapComponent, RadiusSliderComponent, SafariCardComponent],
   templateUrl: './discovery.component.html',
   styleUrl: './discovery.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

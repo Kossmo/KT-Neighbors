@@ -45,7 +45,7 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 - Ordre des contrôles dans le panel : search → radius → kingdom chips → liste
 - Compteur "N / total species · Xkm" quand un filtre est actif
 - Cache localStorage 24h (clé géohash ~2km)
-- **`.map-tools`** : container positionné `top-right` de la carte contenant les boutons tree (icône arbre), game (icône dé) et heatmap toggle — visible quand `status === 'success'`
+- **`.map-tools`** : container positionné `top-right` de la carte contenant les boutons tree (icône arbre), habitat (icône graph), game (icône dé) et heatmap toggle — visible quand `status === 'success'`
 
 ### Carte (Leaflet)
 - Tuiles : CartoDB Positron (fond blanc épuré, lignes grises fines)
@@ -55,6 +55,16 @@ Expérience web qui révèle la biodiversité autour de l'utilisateur. À partir
 - Clic sur pin → navigate vers fiche détail
 - Render order : dimmed en premier, selected en dernier (z-layering)
 - Zoom control déplacé en `topleft` pour libérer le coin `topright`
+- **Monde unique** : `maxBounds [[-90,-180],[90,180]]` + `maxBoundsViscosity: 1.0` bloque le pan au-delà du monde ; tuiles répétées visuellement sur les bords (`noWrap` false) ; `minZoom` calculé dynamiquement (`Math.ceil(log2(max(w,h)/256))`) pour que le monde remplisse toujours le container, mis à jour sur `resize`
+- **`attributionControl: false`** — attribution retirée de la carte, centralisée dans le panneau info
+- **Bouton info "i"** positionné `topleft` sous les boutons +/- (`top: 80px; left: 13px`, z-index 1000) : ouvre un panneau avec présentation du site, liste des features et mentions légales (GBIF, iNaturalist CC, Wikipedia CC BY-SA, OSM + CARTO). Input `[showInfo]="false"` pour masquer sur la mini-carte de la fiche détail.
+
+### Safari du jour
+- **Carte `<app-safari-card>`** positionnée `bottom-right` de `.map-panel` (z-index 1001), visible quand `status === 'success'` ET `mapMode() === 'pins'` (masquée en heatmap pour éviter le chevauchement avec la timeline)
+- Header cliquable (sun icon + "Species of the day" + chevron) : collapse/expand via `max-height` CSS — transition fluide sans recréation DOM
+- Sélection déterministe par hash djb2 sur la clé `"YYYY-MM-DD:lat_arrondi:lon_arrondi"` — même espèce toute la journée pour une localisation donnée
+- Photo `object-fit: cover` (130px), nom en Amatic SC, nom scientifique + kingdom · famille, bouton ochre "View profile" → fiche détail
+- Composant auto-contenu : `src/app/features/discovery/safari-card/`
 
 ### Heatmap
 - Bouton toggle "Heat map / Pins" dans `.map-tools` en haut à droite de la carte (visible quand status=success)
@@ -163,6 +173,7 @@ src/
       discovery/
         map/
         radius-slider/
+        safari-card/
         species-card/
         species-list/
       species-detail/
@@ -186,7 +197,7 @@ src/
 - **Arbre taxonomique interactif** (D3 tree) : classification (règne → espèce) des créatures trouvées près de toi ✅ implémenté
 - **Jeu de reconnaissance** : photo + 4 noms possibles, pour apprendre la faune/flore locale ✅ implémenté
 - **"Qui partage ton habitat ?"** : graphe force-directed des espèces et leurs liens phylogénétiques ✅ implémenté
-- **"Safari du jour"** : une espèce tirée au sort chaque jour parmi celles du coin
+- **"Safari du jour"** : une espèce tirée au sort chaque jour parmi celles du coin ✅ implémenté (carte collapsible bottom-right de la map)
 - **Mode collection** : l'utilisateur coche les espèces qu'il a vues en vrai, comme un pokédex local
 
 ## Ressources

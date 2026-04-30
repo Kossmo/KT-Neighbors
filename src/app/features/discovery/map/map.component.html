@@ -1,6 +1,62 @@
 <div class="map-wrap">
   <div #mapEl class="map-el"></div>
 
+  <!-- ── Info button + panel (below zoom controls, topleft) ──────────────── -->
+  @if (showInfo()) {
+  <div class="map-info">
+    <button
+      class="map-info__btn"
+      (click)="toggleInfo()"
+      [class.map-info__btn--active]="infoOpen()"
+      [attr.aria-expanded]="infoOpen()"
+      aria-label="About & legal notices"
+    >i</button>
+
+    @if (infoOpen()) {
+      <div class="map-info__panel" role="dialog" aria-label="About Neighbors">
+
+        <h3 class="map-info__title">About</h3>
+        <p class="map-info__text">
+          Neighbors reveals the biodiversity around you. Enter a location to explore
+          species observed nearby, sourced from global naturalist databases.
+        </p>
+
+        <h4 class="map-info__section">Features</h4>
+        <ul class="map-info__list">
+          <li>Filter by kingdom, family or name</li>
+          <li>Taxonomy tree — from kingdom down to genus</li>
+          <li>Habitat graph — phylogenetic connections</li>
+          <li>Species quiz — identify your local wildlife</li>
+          <li>Species of the day — one surprise daily</li>
+          <li>Heatmap — 12-month observation density</li>
+        </ul>
+
+        <h4 class="map-info__section">Data & legal</h4>
+        <ul class="map-info__list map-info__list--credits">
+          <li>
+            Species data —
+            <a href="https://gbif.org" target="_blank" rel="noopener noreferrer">GBIF</a>
+          </li>
+          <li>
+            Photos —
+            <a href="https://inaturalist.org" target="_blank" rel="noopener noreferrer">iNaturalist</a>
+            contributors, CC licenses
+          </li>
+          <li>Descriptions — Wikipedia contributors, CC BY-SA</li>
+          <li>
+            Map tiles — ©
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+            contributors, ©
+            <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>
+          </li>
+        </ul>
+
+      </div>
+    }
+  </div>
+  }
+
+  <!-- ── Heatmap controls ────────────────────────────────────────────────── -->
   @if (mode() === 'heatmap') {
     <div class="heat-controls">
 

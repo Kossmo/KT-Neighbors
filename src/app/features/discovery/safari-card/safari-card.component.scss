@@ -1,0 +1,156 @@
+@use '../../../../styles/variables' as *;
+
+.safari-card {
+  position: absolute;
+  bottom: $space-4;
+  right: $space-3;
+  z-index: 1001;
+  width: 260px;
+  background: rgba($color-paper, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid $color-ink-faint;
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba($color-ink, 0.12);
+  animation: slideUp $duration-slow $ease-ink both;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+.safari-card__header {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  width: 100%;
+  padding: $space-2 $space-3;
+  border-bottom: 1px solid $color-ink-faint;
+  cursor: pointer;
+  background: transparent;
+  transition: background $duration-fast $ease-ink;
+
+  .safari-card--collapsed & {
+    border-bottom-color: transparent;
+  }
+
+  &:hover { background: rgba($color-ink, 0.03); }
+}
+
+.safari-card__sun {
+  width: 13px;
+  height: 13px;
+  color: $color-ochre;
+  flex-shrink: 0;
+}
+
+.safari-card__label {
+  flex: 1;
+  font-family: $font-body;
+  font-size: $text-xs;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $color-ink-muted;
+  text-align: left;
+}
+
+.safari-card__chevron {
+  width: 11px;
+  height: 11px;
+  color: $color-ink-muted;
+  flex-shrink: 0;
+  transition: transform $duration-normal $ease-ink;
+
+  .safari-card--collapsed & {
+    transform: rotate(-90deg);
+  }
+}
+
+// ─── Collapsible body ─────────────────────────────────────────────────────────
+.safari-card__body {
+  max-height: 340px;
+  overflow: hidden;
+  transition: max-height $duration-normal $ease-ink;
+
+  .safari-card--collapsed & {
+    max-height: 0;
+  }
+}
+
+// ─── Photo ────────────────────────────────────────────────────────────────────
+.safari-card__photo-wrap {
+  width: 100%;
+  height: 130px;
+  overflow: hidden;
+  background: #1e1812;
+}
+
+.safari-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+// ─── Info ─────────────────────────────────────────────────────────────────────
+.safari-card__info {
+  padding: $space-3 $space-3 $space-3;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+}
+
+.safari-card__common {
+  font-family: $font-hand;
+  font-size: $text-2xl;
+  font-weight: 700;
+  color: $color-ink;
+  line-height: $leading-tight;
+}
+
+.safari-card__scientific {
+  font-family: $font-body;
+  font-style: italic;
+  font-size: $text-xs;
+  color: $color-ink-muted;
+}
+
+.safari-card__meta {
+  font-family: $font-body;
+  font-size: $text-xs;
+  color: $color-ink-muted;
+  letter-spacing: 0.04em;
+  margin-top: $space-1;
+}
+
+.safari-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  margin-top: $space-2;
+  font-family: $font-body;
+  font-size: $text-xs;
+  color: $color-ochre;
+  border: 1px solid $color-ochre;
+  border-radius: 2px;
+  padding: $space-1 $space-3;
+  cursor: pointer;
+  background: transparent;
+  transition: background $duration-fast $ease-ink, color $duration-fast $ease-ink;
+  align-self: flex-start;
+
+  svg { width: 10px; height: 10px; }
+
+  &:hover {
+    background: $color-ochre;
+    color: $color-paper;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

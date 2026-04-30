@@ -61,6 +61,7 @@ export class MapComponent implements AfterViewInit, OnDestroy {
   readonly heatSlots  = input<HeatSlot[]>([]);
 
   readonly initialHeatMonth = input<number>(0);
+  readonly showInfo         = input<boolean>(true);
 
   readonly speciesClicked = output<number>();
   readonly monthChanged   = output<number>();
@@ -82,7 +83,10 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   readonly currentMonth = signal(0);
   readonly isPlaying    = signal(false);
-  readonly monthLabel = computed(() => this.heatSlots()[this.currentMonth()]?.label ?? '');
+  readonly monthLabel   = computed(() => this.heatSlots()[this.currentMonth()]?.label ?? '');
+  readonly infoOpen     = signal(false);
+
+  toggleInfo(): void { this.infoOpen.update(v => !v); }
 
   private readonly zone = inject(NgZone);
 
@@ -148,13 +152,21 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const coords = this.coordinates();
     const mapEl  = this.mapElRef().nativeElement;
 
-    this.map = L.map(mapEl, { center: [coords.lat, coords.lon], zoom: 13, zoomControl: false });
+    this.map = L.map(mapEl, {
+      center: [coords.lat, coords.lon], zoom: 13, zoomControl: false,
+      maxBounds: [[-90, -180], [90, 180]],
+      maxBoundsViscosity: 1.0,
+      attributionControl: false,
+    });
     L.control.zoom({ position: 'topleft' }).addTo(this.map);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      minZoom: 1, maxZoom: 19,
+      maxZoom: 19,
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
     }).addTo(this.map);
+
+    this.updateMinZoom();
+    this.map.on('resize', () => this.updateMinZoom());
 
     this.radiusCircle = L.circle([coords.lat, coords.lon], {
       radius: this.radiusKm() * 1000,
@@ -177,6 +189,16 @@ export class MapComponent implements AfterViewInit, OnDestroy {
       this.drawHeat(this.heatData()[this.initialHeatMonth()] ?? []);
     } else if (this.species().length > 0) {
       this.renderMarkers(this.species());
+    }
+  }
+
+  private updateMinZoom(): void {
+    if (!this.map) return;
+    const { x, y } = this.map.getSize();
+    const minZoom = Math.ceil(Math.log2(Math.max(x, y) / 256));
+    this.map.setMinZoom(Math.max(1, minZoom));
+    if (this.map.getZoom() < this.map.getMinZoom()) {
+      this.map.setZoom(this.map.getMinZoom(), { animate: false });
     }
   }
 
