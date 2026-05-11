@@ -1,0 +1,160 @@
+@use '../../../styles/variables' as *;
+@use '../../../styles/paper' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  background: $color-paper;
+  overflow: hidden;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+.search-header {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-4;
+  padding: $space-6;
+  border-bottom: 1px solid $color-ink-faint;
+  flex-shrink: 0;
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__location {
+    @include hand-heading($text-2xl);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__count {
+    font-size: $text-sm;
+    color: $color-ink-muted;
+    font-style: italic;
+    margin-top: $space-1;
+
+    span { color: $color-ink-light; }
+  }
+}
+
+.back-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid $color-ink-faint;
+  border-radius: 2px;
+  color: $color-ink-light;
+  background: transparent;
+  transition: border-color $duration-normal $ease-ink, color $duration-normal $ease-ink;
+  margin-top: $space-1;
+
+  svg { width: 18px; height: 18px; }
+
+  &:hover {
+    border-color: $color-ink;
+    color: $color-ink;
+  }
+}
+
+// ─── Search bar ───────────────────────────────────────────────────────────────
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  border-bottom: 1px solid $color-ink-faint;
+  flex-shrink: 0;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 14px;
+    height: 14px;
+    color: $color-ink-muted;
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: $font-body;
+    font-size: $text-sm;
+    font-style: italic;
+    color: $color-ink;
+    padding: $space-2 0;
+
+    &::placeholder { color: $color-ink-muted; }
+    &::-webkit-search-cancel-button { display: none; }
+  }
+
+  &__clear {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: $color-ink-muted;
+    background: transparent;
+    transition: color $duration-fast $ease-ink;
+
+    svg { width: 10px; height: 10px; }
+    &:hover { color: $color-ink; }
+  }
+}
+
+// ─── Kingdom filters ──────────────────────────────────────────────────────────
+.kingdom-filters {
+  display: flex;
+  gap: $space-2;
+  padding: $space-3 $space-6;
+  border-bottom: 1px solid $color-ink-faint;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.kingdom-chip {
+  flex-shrink: 0;
+  padding: $space-1 $space-3;
+  border: 1px solid var(--chip-border, #{$color-ink-faint});
+  border-radius: 20px;
+  background: transparent;
+  color: $color-ink-light;
+  font-family: $font-body;
+  font-size: $text-xs;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition:
+    background $duration-fast $ease-ink,
+    color $duration-fast $ease-ink,
+    border-color $duration-fast $ease-ink;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--chip-bg, rgba(58,47,36,0.06));
+    color: $color-ink;
+  }
+
+  &--active {
+    background: var(--chip-bg, rgba(58,47,36,0.08));
+    border-color: var(--chip-border, #{$color-ink-light});
+    color: $color-ink;
+    font-weight: 500;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--chip-border, #{$color-ink-light});
+    outline-offset: 2px;
+  }
+}

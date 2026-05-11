@@ -29,7 +29,7 @@ export class SafariCardComponent implements OnInit {
   private readonly router = inject(Router);
 
   readonly species     = signal<Species | null>(null);
-  readonly expanded    = signal(true);
+  readonly expanded    = signal(window.innerWidth > 768);
   readonly photoFailed = signal(false);
   readonly visible     = computed(() => this.store.mapMode() === 'pins');
 
@@ -44,6 +44,8 @@ export class SafariCardComponent implements OnInit {
     const sp = this.species();
     if (sp) this.router.navigate(['/species', sp.taxonKey]);
   }
+
+  goToSearch(): void { this.router.navigate(['/search']); }
 
   onPhotoError(): void { this.photoFailed.set(true); }
 

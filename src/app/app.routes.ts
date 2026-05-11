@@ -33,5 +33,10 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/habitat/habitat.component').then((m) => m.HabitatComponent),
   },
+  {
+    path: 'search',
+    loadComponent: () =>
+      import('./features/search/search.component').then((m) => m.SearchComponent),
+  },
   { path: '**', redirectTo: '' },
 ];

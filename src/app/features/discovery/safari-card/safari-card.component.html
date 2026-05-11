@@ -1,7 +1,7 @@
 @if (visible() && species(); as sp) {
   <div class="safari-card" [class.safari-card--collapsed]="!expanded()">
 
-    <!-- Always-visible header — click anywhere to toggle -->
+    <!-- Always-visible header — click to toggle -->
     <button class="safari-card__header" (click)="toggle()" aria-label="Toggle species of the day">
       <svg class="safari-card__sun" viewBox="0 0 14 14" aria-hidden="true" fill="none">
         <circle cx="7" cy="7" r="2.4" stroke="currentColor" stroke-width="1.2"/>

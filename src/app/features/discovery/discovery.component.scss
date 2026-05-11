@@ -13,7 +13,7 @@
 
   @media (max-width: $bp-md) {
     grid-template-columns: 1fr;
-    grid-template-rows: 50dvh 50dvh;
+    grid-template-rows: 1fr;
   }
 }
 
@@ -26,9 +26,7 @@
   overflow: hidden;
 
   @media (max-width: $bp-md) {
-    border-right: none;
-    border-bottom: 1.5px solid $color-ink-faint;
-    order: 2;
+    display: none;
   }
 }
 
@@ -68,6 +66,10 @@
   padding: $space-2 $space-4;
   border-bottom: 1px solid $color-ink-faint;
   flex-shrink: 0;
+
+  @media (max-width: $bp-md) {
+    display: none;
+  }
 
   &__icon {
     flex-shrink: 0;
@@ -244,6 +246,38 @@
     background: rgba($color-ochre, 0.1);
     border-color: $color-ochre;
     color: $color-ink;
+  }
+}
+
+// ─── Search FAB — mobile only ─────────────────────────────────────────────────
+.search-fab {
+  display: none;
+  position: absolute;
+  bottom: $space-4;
+  left: $space-3;
+  z-index: 1001;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  background: rgba($color-paper, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid $color-ink-faint;
+  border-radius: 3px;
+  box-shadow: 0 4px 16px rgba($color-ink, 0.12);
+  color: $color-ink-muted;
+  animation: slideUp $duration-slow $ease-ink both;
+  transition: border-color $duration-fast $ease-ink, color $duration-fast $ease-ink;
+
+  svg { width: 15px; height: 15px; }
+
+  &:hover {
+    border-color: $color-ink;
+    color: $color-ink;
+  }
+
+  @media (max-width: $bp-md) {
+    display: flex;
   }
 }
 

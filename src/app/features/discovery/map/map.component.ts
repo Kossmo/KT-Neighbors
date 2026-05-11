@@ -175,8 +175,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     }).addTo(this.map);
 
     this.userDot = L.circleMarker([coords.lat, coords.lon], {
-      radius: 5, color: '#ffffff', weight: 2,
-      fillColor: '#c4873a', fillOpacity: 1, interactive: false,
+      radius: 7, color: '#ffffff', weight: 2.5,
+      fillColor: '#2563eb', fillOpacity: 1, interactive: false,
     }).addTo(this.map);
 
     this.layerGroup = L.layerGroup().addTo(this.map);
