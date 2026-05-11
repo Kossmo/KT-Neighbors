@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   inject,
 } from '@angular/core';
@@ -30,7 +31,7 @@ const DEFAULT_KINGDOM_COLOR = { bg: 'rgba(58,47,36,0.08)', border: '#6b5744' };
   styleUrl: './search.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit {
   readonly store = inject(SpeciesStore);
   private readonly location = inject(Location);
   private readonly router = inject(Router);
@@ -73,6 +74,10 @@ export class SearchComponent {
     () => this.store.selectedKingdoms().size > 0 || this.store.searchQuery().trim().length > 0,
   );
 
+  ngOnInit(): void {
+    if (!this.store.species().length) this.router.navigate(['/']);
+  }
+
   goBack(): void { this.location.back(); }
 
   onSearch(event: Event): void {
@@ -103,6 +108,7 @@ export class SearchComponent {
 
   selectSpecies(taxonKey: number | null): void {
     this.store.selectSpecies(taxonKey);
+    if (taxonKey !== null) this.location.back();
   }
 
   updateRadius(km: number): void {
