@@ -163,33 +163,76 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
     const applyTransform = () =>
       g.attr('transform', `translate(${curTx},${curTy}) scale(${curK})`);
 
-    // ─── Native pointer events for pan ────────────────────────────────────────
-    // Delta-based approach: accumulate clamped deltas, never unclamped state.
+    // ─── Native pointer events for pan + pinch-zoom ──────────────────────────
     this.zone.runOutsideAngular(() => {
       const sig: AbortSignal = this.abort.signal;
-      let isDragging = false;
+
+      // Multi-pointer tracking (handles both mouse and touch via Pointer Events API)
+      const pointers = new Map<number, { x: number; y: number }>();
       let startClientX = 0, startClientY = 0;
       let lastPX = 0, lastPY = 0;
+      let pinchStartDist = 0, pinchStartK = 1;
+      let pinchStartDataX = 0, pinchStartDataY = 0;
+
+      const pairDist = () => {
+        const [p1, p2] = Array.from(pointers.values());
+        return Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      };
+      const pairCenter = () => {
+        const [p1, p2] = Array.from(pointers.values());
+        const rect = svgEl.getBoundingClientRect();
+        return { cx: (p1.x + p2.x) / 2 - rect.left, cy: (p1.y + p2.y) / 2 - rect.top };
+      };
 
       svgEl.addEventListener('pointerdown', (e: PointerEvent) => {
-        isDragging    = true;
-        startClientX  = lastPX = e.clientX;
-        startClientY  = lastPY = e.clientY;
+        // Capture keeps events flowing to SVG even when finger moves outside
+        svgEl.setPointerCapture(e.pointerId);
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (pointers.size === 1) {
+          startClientX = lastPX = e.clientX;
+          startClientY = lastPY = e.clientY;
+        } else if (pointers.size === 2) {
+          pinchStartDist  = pairDist();
+          pinchStartK     = curK;
+          const { cx, cy } = pairCenter();
+          pinchStartDataX = (cx - curTx) / curK;
+          pinchStartDataY = (cy - curTy) / curK;
+        }
       }, { signal: sig });
 
       svgEl.addEventListener('pointermove', (e: PointerEvent) => {
-        if (!isDragging) return;
-        // Apply clamped delta — no accumulated unclamped state
-        curTx = clampTx(curTx + (e.clientX - lastPX));
-        curTy = clampTy(curTy + (e.clientY - lastPY));
-        lastPX = e.clientX;
-        lastPY = e.clientY;
-        applyTransform();
+        if (!pointers.has(e.pointerId)) return;
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (pointers.size === 2) {
+          // Pinch-to-zoom: scale around the midpoint between both fingers
+          const { cx, cy } = pairCenter();
+          curK  = Math.max(0.1, Math.min(4, pinchStartK * (pairDist() / pinchStartDist)));
+          curTx = clampTx(cx - pinchStartDataX * curK);
+          curTy = clampTy(cy - pinchStartDataY * curK);
+          applyTransform();
+        } else if (pointers.size === 1) {
+          // Single-finger pan
+          curTx = clampTx(curTx + (e.clientX - lastPX));
+          curTy = clampTy(curTy + (e.clientY - lastPY));
+          lastPX = e.clientX;
+          lastPY = e.clientY;
+          applyTransform();
+        }
       }, { signal: sig });
 
-      const stopDrag = () => { isDragging = false; };
-      svgEl.addEventListener('pointerup',    stopDrag, { signal: sig });
-      svgEl.addEventListener('pointerleave', stopDrag, { signal: sig });
+      const endPointer = (e: PointerEvent) => {
+        pointers.delete(e.pointerId);
+        // If one finger lifted during pinch, restart pan from the remaining finger
+        if (pointers.size === 1) {
+          const [p] = Array.from(pointers.values());
+          lastPX = p.x;
+          lastPY = p.y;
+        }
+      };
+      svgEl.addEventListener('pointerup',     endPointer, { signal: sig });
+      svgEl.addEventListener('pointercancel', endPointer, { signal: sig });
 
       // Suppress node clicks that follow a drag (> 3 px movement), capture phase
       svgEl.addEventListener('click', (e: MouseEvent) => {
@@ -198,19 +241,16 @@ export class TreeComponent implements AfterViewInit, OnDestroy {
         if (dx * dx + dy * dy > 9) e.stopPropagation();
       }, { capture: true, signal: sig });
 
-      // Wheel zoom toward pointer
+      // Wheel zoom toward cursor (desktop)
       svgEl.addEventListener('wheel', (e: WheelEvent) => {
         e.preventDefault();
         const factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
         const newK   = Math.max(0.1, Math.min(4, curK * factor));
-
-        // Keep the data point under the cursor fixed after rescaling
-        const rect  = svgEl.getBoundingClientRect();
-        const px    = e.clientX - rect.left;
-        const py    = e.clientY - rect.top;
-        const dataX = (px - curTx) / curK;
-        const dataY = (py - curTy) / curK;
-
+        const rect   = svgEl.getBoundingClientRect();
+        const px     = e.clientX - rect.left;
+        const py     = e.clientY - rect.top;
+        const dataX  = (px - curTx) / curK;
+        const dataY  = (py - curTy) / curK;
         curK  = newK;
         curTx = clampTx(px - dataX * curK);
         curTy = clampTy(py - dataY * curK);
