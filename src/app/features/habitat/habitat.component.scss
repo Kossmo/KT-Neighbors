@@ -16,6 +16,7 @@ $h-muted: $color-ink-muted;
   inset: 0;
   width: 100%;
   height: 100%;
+  touch-action: none; // let D3 zoom own all touch gestures
 }
 
 // ─── HUD ──────────────────────────────────────────────────────────────────────
@@ -85,6 +86,8 @@ $h-muted: $color-ink-muted;
   flex-direction: column;
   gap: $space-2;
   pointer-events: none;
+
+  @media (max-width: $bp-md) { display: none; }
 }
 
 .habitat__legend-item {
@@ -161,4 +164,112 @@ $h-muted: $color-ink-muted;
   font-size: $text-xs;
   color: $color-ink-muted;
   margin-top: $space-1;
+}
+
+// ─── Mobile tap card ──────────────────────────────────────────────────────────
+.habitat__mobile-card {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-4;
+  padding: $space-4 $space-4 calc($space-4 + env(safe-area-inset-bottom, 0px));
+  background: rgba($color-paper, 0.97);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid $color-ink-faint;
+  box-shadow: 0 -4px 24px rgba($color-ink, 0.14);
+  animation: slideUp 220ms $ease-ink both;
+}
+
+.habitat__mobile-card-close {
+  position: absolute;
+  top: $space-3;
+  right: $space-3;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-ink-muted;
+  background: transparent;
+
+  svg { width: 10px; height: 10px; }
+  &:hover { color: $color-ink; }
+}
+
+.habitat__mobile-card-img {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid $color-ink-faint;
+  flex-shrink: 0;
+}
+
+.habitat__mobile-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  padding-right: $space-6;
+}
+
+.habitat__mobile-card-name {
+  font-family: $font-hand;
+  font-size: $text-xl;
+  font-weight: 700;
+  color: $color-ink;
+  line-height: $leading-tight;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.habitat__mobile-card-sci {
+  font-family: $font-body;
+  font-size: $text-xs;
+  color: $color-ink-muted;
+
+  em { font-style: italic; }
+}
+
+.habitat__mobile-card-meta {
+  font-family: $font-body;
+  font-size: $text-xs;
+  color: $color-ink-muted;
+  letter-spacing: 0.03em;
+}
+
+.habitat__mobile-card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  margin-top: $space-2;
+  font-family: $font-body;
+  font-size: $text-xs;
+  color: $color-ochre;
+  border: 1px solid $color-ochre;
+  border-radius: 2px;
+  padding: $space-1 $space-3;
+  background: transparent;
+  cursor: pointer;
+  transition: background $duration-fast $ease-ink, color $duration-fast $ease-ink;
+  align-self: flex-start;
+
+  svg { width: 10px; height: 10px; }
+
+  &:hover {
+    background: $color-ochre;
+    color: $color-paper;
+  }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

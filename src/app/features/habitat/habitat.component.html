@@ -26,7 +26,7 @@
     </span>
   </div>
 
-  <!-- Tooltip -->
+  <!-- Tooltip — desktop hover -->
   @if (tooltip(); as tip) {
     <div class="habitat__tooltip">
       @if (tip.photo) {
@@ -38,6 +38,34 @@
           <p class="habitat__tooltip-sci"><em>{{ tip.scientificName }}</em></p>
         }
         <p class="habitat__tooltip-meta">{{ tip.family }} · {{ tip.count }} obs.</p>
+      </div>
+    </div>
+  }
+
+  <!-- Mobile tap card — shown at bottom on tap -->
+  @if (selectedNode(); as node) {
+    <div class="habitat__mobile-card">
+      <button class="habitat__mobile-card-close" (click)="dismissCard()" aria-label="Close">
+        <svg viewBox="0 0 12 12" aria-hidden="true">
+          <path d="M2 2l8 8M10 2L2 10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </button>
+      @if (node.photo) {
+        <img class="habitat__mobile-card-img" [src]="node.photo" [alt]="node.name" />
+      }
+      <div class="habitat__mobile-card-body">
+        <p class="habitat__mobile-card-name">{{ node.name }}</p>
+        @if (node.name !== node.scientificName) {
+          <p class="habitat__mobile-card-sci"><em>{{ node.scientificName }}</em></p>
+        }
+        <p class="habitat__mobile-card-meta">{{ node.family }} · {{ node.occurrenceCount }} obs.</p>
+        <button class="habitat__mobile-card-cta" (click)="goToDetail()">
+          View profile
+          <svg viewBox="0 0 12 12" aria-hidden="true" fill="none">
+            <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.2"
+              stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
     </div>
   }

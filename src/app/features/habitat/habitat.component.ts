@@ -76,9 +76,12 @@ export class HabitatComponent implements AfterViewInit, OnDestroy {
 
   private readonly abort = new AbortController();
 
-  readonly locationName = this.store.locationName;
-  readonly speciesCount = computed(() => this.store.species().length);
-  readonly tooltip      = signal<Tooltip | null>(null);
+  readonly locationName  = this.store.locationName;
+  readonly speciesCount  = computed(() => this.store.species().length);
+  readonly tooltip       = signal<Tooltip | null>(null);
+  readonly selectedNode  = signal<GraphNode | null>(null);
+
+  private restoreHighlight: () => void = () => {};
 
   ngAfterViewInit(): void {
     const species = this.store.species();
@@ -92,6 +95,16 @@ export class HabitatComponent implements AfterViewInit, OnDestroy {
 
   goBack(): void {
     this.location.back();
+  }
+
+  goToDetail(): void {
+    const n = this.selectedNode();
+    if (n) this.router.navigate(['/species', n.id]);
+  }
+
+  dismissCard(): void {
+    this.selectedNode.set(null);
+    this.restoreHighlight();
   }
 
   private async render(allSpecies: Species[]): Promise<void> {
@@ -147,11 +160,35 @@ export class HabitatComponent implements AfterViewInit, OnDestroy {
       .style('cursor', 'pointer');
 
     // ─── Interaction ─────────────────────────────────────────────────────────
-    const sig = this.abort.signal;
+    const sig      = this.abort.signal;
+    const isMobile = () => window.innerWidth <= 768;
 
-    // Track tooltip position via CSS custom properties (no zone involvement)
+    const highlightNode = (d: GraphNode) => {
+      const neighborIds = new Set<number>([d.id]);
+      for (const l of links) {
+        const s = (l.source as GraphNode).id;
+        const t = (l.target as GraphNode).id;
+        if (s === d.id) neighborIds.add(t);
+        if (t === d.id) neighborIds.add(s);
+      }
+      nodeSel
+        .attr('fill-opacity', n => neighborIds.has(n.id) ? 0.95 : 0.12)
+        .attr('stroke-opacity', n => neighborIds.has(n.id) ? 1 : 0.2);
+      linkSel.attr('opacity', l =>
+        (l.source as GraphNode).id === d.id || (l.target as GraphNode).id === d.id ? 1 : 0.04,
+      );
+    };
+
+    const unhighlightAll = () => {
+      nodeSel.attr('fill-opacity', 1).attr('stroke-opacity', 1);
+      linkSel.attr('opacity', 1);
+    };
+    this.restoreHighlight = unhighlightAll;
+
+    // Track tooltip position via CSS custom properties — desktop only
     this.zone.runOutsideAngular(() => {
       svg.addEventListener('mousemove', (e: MouseEvent) => {
+        if (isMobile()) return;
         const rect = svg.getBoundingClientRect();
         const cursorX = e.clientX - rect.left;
         const cursorY = e.clientY - rect.top;
@@ -164,21 +201,8 @@ export class HabitatComponent implements AfterViewInit, OnDestroy {
     });
 
     nodeSel.on('mouseenter', (_e: MouseEvent, d: GraphNode) => {
-      // Highlight neighbors
-      const neighborIds = new Set<number>();
-      neighborIds.add(d.id);
-      for (const l of links) {
-        const s = (l.source as GraphNode).id;
-        const t = (l.target as GraphNode).id;
-        if (s === d.id) neighborIds.add(t);
-        if (t === d.id) neighborIds.add(s);
-      }
-      nodeSel
-        .attr('fill-opacity', n => neighborIds.has(n.id) ? 0.95 : 0.12)
-        .attr('stroke-opacity', n => neighborIds.has(n.id) ? 1 : 0.2);
-      linkSel.attr('opacity', l =>
-        (l.source as GraphNode).id === d.id || (l.target as GraphNode).id === d.id ? 1 : 0.04
-      );
+      if (isMobile()) return;
+      highlightNode(d);
       this.zone.run(() => this.tooltip.set({
         name:           d.name,
         scientificName: d.scientificName,
@@ -189,30 +213,62 @@ export class HabitatComponent implements AfterViewInit, OnDestroy {
     });
 
     nodeSel.on('mouseleave', () => {
-      nodeSel.attr('fill-opacity', 1).attr('stroke-opacity', 1);
-      linkSel.attr('opacity', 1);
+      if (isMobile()) return;
+      unhighlightAll();
       this.zone.run(() => this.tooltip.set(null));
     });
 
-    nodeSel.on('click', (_e: MouseEvent, d: GraphNode) => {
-      this.zone.run(() => this.router.navigate(['/species', d.id]));
+    nodeSel.on('click', (e: MouseEvent, d: GraphNode) => {
+      e.stopPropagation();
+      if (isMobile()) {
+        // Same node tapped again → dismiss
+        if (this.selectedNode()?.id === d.id) {
+          this.zone.run(() => this.dismissCard());
+          return;
+        }
+        highlightNode(d);
+        this.zone.run(() => this.selectedNode.set(d));
+
+        // Pan so the node sits in the upper zone, above the bottom card (~180px)
+        const cardH = 180;
+        const t = d3.zoomTransform(svg);
+        const nodeScreenY = d.y! * t.k + t.y;
+        const targetY = (h - cardH) * 0.38;
+        const dy = targetY - nodeScreenY;
+        if (Math.abs(dy) > 20) {
+          const newT = d3.zoomIdentity.translate(t.x, t.y + dy).scale(t.k);
+          root.transition().duration(380).call(zoom.transform as any, newT);
+        }
+      } else {
+        this.zone.run(() => this.router.navigate(['/species', d.id]));
+      }
     });
 
-    // ─── Drag ─────────────────────────────────────────────────────────────────
+    // Tap on SVG background dismisses card (mobile)
     this.zone.runOutsideAngular(() => {
-      nodeSel.call(
-        d3.drag<SVGCircleElement, GraphNode>()
-          .on('start', (e, d) => {
-            if (!e.active) sim.alphaTarget(0.3).restart();
-            d.fx = d.x; d.fy = d.y;
-          })
-          .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
-          .on('end',   (e, d) => {
-            if (!e.active) sim.alphaTarget(0);
-            d.fx = null; d.fy = null;
-          }),
-      );
+      svg.addEventListener('click', () => {
+        if (!isMobile() || !this.selectedNode()) return;
+        this.zone.run(() => this.dismissCard());
+      }, { signal: sig });
     });
+
+    // ─── Drag (desktop only — on mobile drag blocks D3 zoom panning) ──────────
+    if (!isMobile()) {
+      this.zone.runOutsideAngular(() => {
+        nodeSel.call(
+          d3.drag<SVGCircleElement, GraphNode>()
+            .on('start', (e, d) => {
+              if (!e.active) sim.alphaTarget(0.3).restart();
+              d.fx = d.x; d.fy = d.y;
+            })
+            .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
+            .on('end',   (e, d) => {
+              if (!e.active) sim.alphaTarget(0);
+              d.fx = null; d.fy = null;
+            }),
+        );
+      });
+    }
 
     // ─── Simulation ───────────────────────────────────────────────────────────
     const sim = d3.forceSimulation<GraphNode>(nodes)
