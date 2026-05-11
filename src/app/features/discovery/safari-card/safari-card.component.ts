@@ -29,7 +29,7 @@ export class SafariCardComponent implements OnInit {
   private readonly router = inject(Router);
 
   readonly species     = signal<Species | null>(null);
-  readonly expanded    = signal(window.innerWidth > 768);
+  readonly expanded    = signal(false);
   readonly photoFailed = signal(false);
   readonly visible     = computed(() => this.store.mapMode() === 'pins');
 

@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import type { Circle, CircleMarker, Map as LeafletMap, LayerGroup, Marker } from 'leaflet';
 import { Species } from '../../../core/models/species.model';
+import { SpeciesStore } from '../../../core/services/species-store';
 
 // ─── Pin icons ────────────────────────────────────────────────────────────────
 type PinState = 'active' | 'selected' | 'dimmed';
@@ -88,7 +89,8 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
   toggleInfo(): void { this.infoOpen.update(v => !v); }
 
-  private readonly zone = inject(NgZone);
+  private readonly zone  = inject(NgZone);
+  private readonly store = inject(SpeciesStore);
 
   constructor() {
     // Re-render pins when species list changes (pins mode only)
@@ -149,11 +151,14 @@ export class MapComponent implements AfterViewInit, OnDestroy {
     const L = ((mod as any).default ?? mod) as typeof import('leaflet');
     this.L = L;
 
-    const coords = this.coordinates();
-    const mapEl  = this.mapElRef().nativeElement;
+    const coords    = this.coordinates();
+    const mapEl     = this.mapElRef().nativeElement;
+    const savedView = this.showInfo() ? this.store.mapView() : null;
 
     this.map = L.map(mapEl, {
-      center: [coords.lat, coords.lon], zoom: 13, zoomControl: false,
+      center: savedView ? savedView.center : [coords.lat, coords.lon],
+      zoom:   savedView ? savedView.zoom   : 13,
+      zoomControl: false,
       maxBounds: [[-90, -180], [90, 180]],
       maxBoundsViscosity: 1.0,
       attributionControl: false,
@@ -167,6 +172,15 @@ export class MapComponent implements AfterViewInit, OnDestroy {
 
     this.updateMinZoom();
     this.map.on('resize', () => this.updateMinZoom());
+
+    // Persist zoom + center so navigation away and back restores the same view
+    if (this.showInfo()) {
+      this.map.on('moveend zoomend', () => {
+        if (!this.map) return;
+        const c = this.map.getCenter();
+        this.store.mapView.set({ zoom: this.map.getZoom(), center: [c.lat, c.lng] });
+      });
+    }
 
     this.radiusCircle = L.circle([coords.lat, coords.lon], {
       radius: this.radiusKm() * 1000,

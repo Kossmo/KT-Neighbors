@@ -48,11 +48,12 @@ export class SpeciesStore {
   readonly radiusKm = signal<number>(5);
 
   // ─── Filter + UI state (persisted across detail navigation, reset on new search) ─
-  readonly searchQuery      = signal<string>('');
-  readonly selectedKingdoms = signal<Set<string>>(new Set());
-  readonly mapMode          = signal<'pins' | 'heatmap'>('pins');
-  readonly heatMonth        = signal<number>(0);
+  readonly searchQuery       = signal<string>('');
+  readonly selectedKingdoms  = signal<Set<string>>(new Set());
+  readonly mapMode           = signal<'pins' | 'heatmap'>('pins');
+  readonly heatMonth         = signal<number>(0);
   readonly treeExpandedNodes = signal<Set<string>>(new Set());
+  readonly mapView           = signal<{ zoom: number; center: [number, number] } | null>(null);
 
   // ─── Derived signals ────────────────────────────────────────────────────────
   readonly selectedSpecies = computed(() => {
@@ -76,6 +77,7 @@ export class SpeciesStore {
     this.mapMode.set('pins');
     this.heatMonth.set(0);
     this.treeExpandedNodes.set(new Set());
+    this.mapView.set(null);
 
     const cacheKey = this.cache.occurrenceKey(lat, lon, radiusKm);
     const cached = this.cache.get<Species[]>(cacheKey);
