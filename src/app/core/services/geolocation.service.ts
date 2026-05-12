@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { from, Observable, switchMap, throwError } from 'rxjs';
+import { from, Observable, of, switchMap, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 export interface Coordinates {
@@ -13,6 +13,13 @@ export interface GeocodedLocation extends Coordinates {
 }
 
 const NOMINATIM = 'https://nominatim.openstreetmap.org';
+const PHOTON = 'https://photon.komoot.io/api';
+
+export interface PhotonSuggestion {
+  label: string;
+  lat: number;
+  lon: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class GeolocationService {
@@ -34,6 +41,29 @@ export class GeolocationService {
         { enableHighAccuracy: false, timeout: 10_000, maximumAge: 60_000 },
       );
     });
+  }
+
+  autocompleteAddress(query: string): Observable<PhotonSuggestion[]> {
+    const params = new HttpParams().set('q', query).set('limit', '8').set('lang', 'en');
+
+    return this.http.get<PhotonResponse>(`${PHOTON}/`, { params }).pipe(
+      map((res) => {
+        const seen = new Set<string>();
+        const results: PhotonSuggestion[] = [];
+        for (const f of res.features) {
+          const p = f.properties;
+          const parts = [p.name, p.city, p.state, p.country].filter(Boolean);
+          const label = parts.join(', ');
+          if (label && !seen.has(label)) {
+            seen.add(label);
+            results.push({ label, lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] });
+          }
+          if (results.length === 3) break;
+        }
+        return results;
+      }),
+      catchError(() => of([])),
+    );
   }
 
   // Forward geocoding: address string → coordinates + display name
@@ -85,6 +115,18 @@ export class GeolocationService {
         catchError(() => from(['your area'])),
       );
   }
+}
+
+interface PhotonResponse {
+  features: Array<{
+    geometry: { coordinates: [number, number] };
+    properties: {
+      name?: string;
+      city?: string;
+      state?: string;
+      country?: string;
+    };
+  }>;
 }
 
 interface NominatimResult {

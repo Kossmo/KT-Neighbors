@@ -131,6 +131,7 @@
 // ─── Address form ─────────────────────────────────────────────────────────────
 .address-form {
   width: 100%;
+  position: relative;
 
   &__row {
     display: flex;
@@ -155,6 +156,40 @@
 
     &:focus {
       border-color: $color-ink-light;
+    }
+  }
+}
+
+// ─── Autocomplete dropdown ────────────────────────────────────────────────────
+.address-suggestions {
+  position: absolute;
+  top: calc(100% + $space-1);
+  left: 0;
+  right: 0;
+  background: $color-paper;
+  border: 1.5px solid $color-ink-faint;
+  border-radius: 2px;
+  list-style: none;
+  padding: $space-2 0;
+  z-index: 200;
+  box-shadow: 0 6px 20px rgba($color-ink, 0.1);
+  animation: fadeInUp 150ms $ease-ink both;
+
+  &__item {
+    padding: $space-3 $space-4;
+    font-size: $text-sm;
+    font-family: $font-body;
+    color: $color-ink-light;
+    cursor: pointer;
+    transition: background $duration-fast $ease-ink, color $duration-fast $ease-ink;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &:hover,
+    &--active {
+      background: rgba($color-ochre, 0.08);
+      color: $color-ochre;
     }
   }
 }

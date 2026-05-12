@@ -54,9 +54,15 @@
               class="address-form__input"
               type="text"
               placeholder="City, country or address…"
-              [(ngModel)]="addressInput"
+              [ngModel]="addressInput"
+              (ngModelChange)="onInputChange($event)"
+              (keydown)="onKeydown($event)"
               (keyup.enter)="submitAddress()"
+              (blur)="onInputBlur()"
+              autocomplete="off"
               aria-label="Your location"
+              aria-autocomplete="list"
+              [attr.aria-expanded]="showSuggestions()"
             />
             <button
               class="btn-go"
@@ -70,6 +76,22 @@
               </svg>
             </button>
           </div>
+
+          @if (showSuggestions()) {
+            <ul class="address-suggestions" role="listbox">
+              @for (s of suggestions(); track s.label; let i = $index) {
+                <li
+                  class="address-suggestions__item"
+                  [class.address-suggestions__item--active]="i === activeIdx()"
+                  role="option"
+                  [attr.aria-selected]="i === activeIdx()"
+                  (mousedown)="selectSuggestion(s)"
+                >
+                  {{ s.label }}
+                </li>
+              }
+            </ul>
+          }
         </div>
       </div>
 
